@@ -1,0 +1,28 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Nix
+        uses: cachix/install-nix-action@v31
+      - name: Build and Test
+        run: nix build
+      - name: Fetch project version
+        run: echo "VERSION=$(nix develop --command -- mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cardio_generator-${{ env.VERSION }}
+          path: result/share/cardio_generator/cardio_generator.jar
+        env:
+          VERSION: ${{ env.VERSION }}
