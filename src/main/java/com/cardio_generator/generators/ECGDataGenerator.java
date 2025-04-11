@@ -4,11 +4,20 @@ import java.util.Random;
 
 import com.cardio_generator.outputs.OutputStrategy;
 
+/**
+ * Generates ECG (electrocardiogram) data for patients.
+ * The generated data has the label "ECG",
+ * with the data being the ECG value.
+ */
 public class ECGDataGenerator implements PatientDataGenerator {
     private static final Random random = new Random();
     private double[] lastEcgValues;
     private static final double PI = Math.PI;
 
+    /**
+     * Creates a new ECG data generator for a number of patients.
+     * @param patientCount the number of patients to generate data for
+     */
     public ECGDataGenerator(int patientCount) {
         lastEcgValues = new double[patientCount + 1];
         // Initialize the last ECG value for each patient
@@ -17,6 +26,11 @@ public class ECGDataGenerator implements PatientDataGenerator {
         }
     }
 
+    /**
+     * Generates an ECG data point for a given patient, and outputs it using the provided strategy.
+     * @param patientId the ID of the patient for whom to generate data
+     * @param outputStrategy the strategy to use for outputting the generated data
+     */
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {
         // TODO Check how realistic this data is and make it more realistic if necessary
@@ -30,6 +44,12 @@ public class ECGDataGenerator implements PatientDataGenerator {
         }
     }
 
+    /**
+     * Simulates an ECG waveform for a given patient.
+     * @param patientId the ID of the patient
+     * @param lastEcgValue the latest ECG value for the patient
+     * @return the new simulated ECG value
+     */
     private double simulateEcgWaveform(int patientId, double lastEcgValue) {
         // Simplified ECG waveform generation based on sinusoids
         double hr = 60.0 + random.nextDouble() * 20.0; // Simulate heart rate variability between 60 and 80 bpm

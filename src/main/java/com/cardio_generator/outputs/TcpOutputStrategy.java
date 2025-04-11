@@ -6,12 +6,22 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
 
+/**
+ * An {@link OutputStrategy} which outputs the data to connected TCP clients.
+ * This strategy listens for incoming TCP connections on a specified port.
+ * Data is formatted as comma-separated values (without spacing):
+ * PatientID,Timestamp,Label,Data
+ */
 public class TcpOutputStrategy implements OutputStrategy {
 
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private PrintWriter out;
 
+    /**
+     * Constructs a {@code TcpOutputStrategy} listening on a given port.
+     * @param port the port which will be listening for connection.
+     */
     public TcpOutputStrategy(int port) {
         try {
             serverSocket = new ServerSocket(port);
@@ -32,6 +42,13 @@ public class TcpOutputStrategy implements OutputStrategy {
         }
     }
 
+    /**
+     * Output data to connected TCP clients.
+     * @param patientId the patient which this data belongs to
+     * @param timestamp the time at which the data was generated
+     * @param label what this data represents
+     * @param data the actual data to be output
+     */
     @Override
     public void output(int patientId, long timestamp, String label, String data) {
         if (out != null) {
