@@ -24,6 +24,7 @@ public class WebSocketOutputStrategy implements OutputStrategy {
      * Constructs a {@code WebSocketOutputStrategy} listening on a given port.
      * Prints a status message when the server is created and will be started.
      * @param port the port which will be listening for connection.
+     * @throws IllegalStateException if the server fails to start
      */
     public WebSocketOutputStrategy(int port) {
         server = new SimpleWebSocketServer(new InetSocketAddress(port));

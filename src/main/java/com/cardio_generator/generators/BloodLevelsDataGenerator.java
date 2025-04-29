@@ -39,6 +39,7 @@ public class BloodLevelsDataGenerator implements PatientDataGenerator {
      * The generated data includes cholesterol, white blood cells, and red blood cells.
      * @param patientId the ID of the patient for whom to generate data
      * @param outputStrategy the strategy to use for outputting the generated data
+     * @throws RuntimeException if an error occurs during blood levels data generation or output
      */
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {

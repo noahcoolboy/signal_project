@@ -35,6 +35,7 @@ public class BloodPressureDataGenerator implements PatientDataGenerator {
      * The generated data includes systolic and diastolic pressure.
      * @param patientId the ID of the patient for whom to generate data
      * @param outputStrategy the strategy to use for outputting the generated data
+     * @throws RuntimeException if an error occurs during blood pressure data generation or output
      */
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {

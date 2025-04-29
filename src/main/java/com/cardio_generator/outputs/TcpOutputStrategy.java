@@ -21,6 +21,7 @@ public class TcpOutputStrategy implements OutputStrategy {
     /**
      * Constructs a {@code TcpOutputStrategy} listening on a given port.
      * @param port the port which will be listening for connection.
+     * @throws IOException if there is an error creating the server socket or accepting client connections
      */
     public TcpOutputStrategy(int port) {
         try {

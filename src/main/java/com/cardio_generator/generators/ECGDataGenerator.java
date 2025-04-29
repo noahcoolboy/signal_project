@@ -30,6 +30,7 @@ public class ECGDataGenerator implements PatientDataGenerator {
      * Generates an ECG data point for a given patient, and outputs it using the provided strategy.
      * @param patientId the ID of the patient for whom to generate data
      * @param outputStrategy the strategy to use for outputting the generated data
+     * @throws RuntimeException if an error occurs during ECG data generation or output
      */
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {
