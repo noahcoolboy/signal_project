@@ -3,7 +3,7 @@ package com.alerts.strategies;
 import java.util.List;
 
 import com.alerts.Alert;
-import com.alerts.factory.BloodPressureAlertFactory;
+import com.alerts.factories.BloodPressureAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 

@@ -1,4 +1,4 @@
-package com.alerts.factory;
+package com.alerts.factories;
 
 import com.alerts.Alert;
 import com.alerts.alerts.UserAlert;

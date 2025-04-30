@@ -3,7 +3,7 @@ package com.alerts.strategies;
 import java.util.List;
 
 import com.alerts.Alert;
-import com.alerts.factory.BloodSaturationAlertFactory;
+import com.alerts.factories.BloodSaturationAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 

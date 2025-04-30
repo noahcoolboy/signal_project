@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alerts.Alert;
-import com.alerts.factory.UserAlertFactory;
+import com.alerts.factories.UserAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
