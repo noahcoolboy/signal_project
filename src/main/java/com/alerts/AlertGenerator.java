@@ -46,9 +46,8 @@ public class AlertGenerator {
      */
     public void evaluateData(Patient patient) {
         for(AlertStrategy strategy : alertStrategies) {
-            String alertMessage = strategy.evaluate(patient);
-            if (alertMessage != null) {
-                Alert alert = new Alert(Integer.toString(patient.getPatientId()), alertMessage, System.currentTimeMillis());
+            Alert alert = strategy.evaluate(patient);
+            if (alert != null) {
                 triggerAlert(alert);
             }
         }

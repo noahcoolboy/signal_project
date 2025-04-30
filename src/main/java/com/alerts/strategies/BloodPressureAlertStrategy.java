@@ -2,13 +2,19 @@ package com.alerts.strategies;
 
 import java.util.List;
 
+import com.alerts.Alert;
+import com.alerts.factory.BloodPressureAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
 public class BloodPressureAlertStrategy implements AlertStrategy {
 
     @Override
-    public String evaluate(Patient patient) {
+    public Alert evaluate(Patient patient) {
+        int systolic = -1;
+        int diastolic = -1;
+        String condition = null;
+
         for(String type : new String[] { "SystolicPressure", "DiastolicPressure" }) {
             List<PatientRecord> records = patient.getRecords(type, 3);
             if(records.isEmpty())
@@ -16,16 +22,23 @@ public class BloodPressureAlertStrategy implements AlertStrategy {
             
             // Check for range violations
             double value = records.getLast().getMeasurementValue();
-            if(type == "SystolicPressure") {
+            if(type.equals("SystolicPressure")) {
+                systolic = (int) value;
                 if(value < 90)
-                    return type + " is too low";
+                    condition = type + " is too low";
                 else if(value > 180)
-                    return type + " is too high";
-            } else if(type == "DiastolicPressure") {
+                    condition = type + " is too high";
+            } else if(type.equals("DiastolicPressure")) {
+                diastolic = (int) value;
                 if(value < 60)
-                    return type + " is too low";
+                    condition = type + " is too low";
                 else if(value > 120)
-                    return type + " is too high";
+                    condition = type + " is too high";
+            }
+
+            if (condition != null) {
+                return new BloodPressureAlertFactory(systolic, diastolic)
+                    .createAlert(String.valueOf(patient.getPatientId()), condition, System.currentTimeMillis());
             }
 
             // Check for consistent increase / decrease
@@ -43,12 +56,16 @@ public class BloodPressureAlertStrategy implements AlertStrategy {
             }
             
             if(increaseFlag) {
-                return type + " is increasing rapidly";
+                condition = type + " is increasing rapidly";
             } else if(decreaseFlag) {
-                return type + " is decreasing rapidly";
+                condition = type + " is decreasing rapidly";
+            }
+
+            if (condition != null) {
+                return new BloodPressureAlertFactory(systolic, diastolic)
+                    .createAlert(String.valueOf(patient.getPatientId()), condition, System.currentTimeMillis());
             }
         }
         return null;
     }
-    
 }

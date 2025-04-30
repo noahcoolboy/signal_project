@@ -5,10 +5,9 @@ import com.data_management.Patient;
 
 public interface AlertStrategy {
     /**
-     * Evaluates the patient's data to determine if an alert condition is met.
-     *
-     * @param patient the patient to check
-     * @return a string if an alert condition is met, null otherwise
+     * Evaluates the patient's condition and returns an appropriate Alert if needed.
+     * @param patient the patient to evaluate
+     * @return an Alert if a condition is detected, null otherwise
      */
-    String evaluate(Patient patient);
+    Alert evaluate(Patient patient);
 }
