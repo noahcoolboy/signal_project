@@ -1,7 +1,11 @@
 package com.alerts;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.data_management.DataStorage;
 import com.data_management.Patient;
+import com.alerts.strategies.*;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -11,6 +15,7 @@ import com.data_management.Patient;
  */
 public class AlertGenerator {
     private DataStorage dataStorage;
+    private List<AlertStrategy> alertStrategies = new ArrayList<>();
 
     /**
      * Constructs an {@code AlertGenerator} with a specified {@code DataStorage}.
@@ -22,6 +27,11 @@ public class AlertGenerator {
      */
     public AlertGenerator(DataStorage dataStorage) {
         this.dataStorage = dataStorage;
+        this.alertStrategies.add(new BloodPressureAlertStrategy());
+        this.alertStrategies.add(new BloodSaturationAlertStrategy());
+        this.alertStrategies.add(new EcgAlertStrategy());
+        this.alertStrategies.add(new UserAlertAlertStrategy());
+        this.alertStrategies.add(new HypotensiveHypoxemiaAlertStrategy());
     }
 
     /**
@@ -35,7 +45,13 @@ public class AlertGenerator {
      * @param patient the patient data to evaluate for alert conditions
      */
     public void evaluateData(Patient patient) {
-        // Implementation goes here
+        for(AlertStrategy strategy : alertStrategies) {
+            String alertMessage = strategy.evaluate(patient);
+            if (alertMessage != null) {
+                Alert alert = new Alert(Integer.toString(patient.getPatientId()), alertMessage, System.currentTimeMillis());
+                triggerAlert(alert);
+            }
+        }
     }
 
     /**
