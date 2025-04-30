@@ -25,6 +25,15 @@ public class Patient {
     }
 
     /**
+     * Retrieves the unique identifier for this patient.
+     *
+     * @return the unique identifier for this patient
+     */
+    public int getPatientId() {
+        return patientId;
+    }
+
+    /**
      * Adds a new record to this patient's list of medical records.
      * The record is created with the specified measurement value, record type, and
      * timestamp.
@@ -52,7 +61,32 @@ public class Patient {
      *         range
      */
     public List<PatientRecord> getRecords(long startTime, long endTime) {
-        // TODO Implement and test this method
-        return new ArrayList<>();
+        List<PatientRecord> records = new ArrayList<>();
+        for (PatientRecord record : this.patientRecords) {
+            if (record.getTimestamp() >= startTime && record.getTimestamp() <= endTime) {
+                records.add(record);
+            }
+        }
+        return records;
+    }
+
+    /**
+     * Retrieves a list of PatientRecord objects for this patient that match a
+     * specified label.
+     * The method returns the most recent records, limited by the specified count.
+     *
+     * @param label the label of the records to retrieve, e.g., "HeartRate",
+     *              "BloodPressure"
+     * @param count the maximum number of records to return
+     * @return a list of PatientRecord objects that match the specified label
+     */
+    public List<PatientRecord> getRecords(String label, int count) {
+        List<PatientRecord> records = new ArrayList<>();
+        for (PatientRecord record : this.patientRecords) {
+            if (record.getRecordType().equals(label)) {
+                records.add(record);
+            }
+        }
+        return records.subList(Math.max(0, records.size() - count), records.size());
     }
 }
