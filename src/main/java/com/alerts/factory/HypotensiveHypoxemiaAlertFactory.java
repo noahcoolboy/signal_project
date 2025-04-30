@@ -1,7 +1,7 @@
 package com.alerts.factory;
 
 import com.alerts.Alert;
-import com.alerts.HypotensiveHypoxemiaAlert;
+import com.alerts.alerts.HypotensiveHypoxemiaAlert;
 
 public class HypotensiveHypoxemiaAlertFactory extends AlertFactory {
     private final int systolic;

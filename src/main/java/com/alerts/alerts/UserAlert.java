@@ -1,4 +1,6 @@
-package com.alerts;
+package com.alerts.alerts;
+
+import com.alerts.Alert;
 
 public class UserAlert extends Alert {
     private String message;

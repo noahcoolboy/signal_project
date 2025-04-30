@@ -14,7 +14,7 @@ public class UserAlertAlertStrategy implements AlertStrategy {
     private final Map<Patient, Long> lastAlertTime = new HashMap<>();
 
     @Override
-    public Alert evaluate(Patient patient) {
+    public Alert checkAlert(Patient patient) {
         List<PatientRecord> records = patient.getRecords(lastAlertTime.getOrDefault(patient, 0L), System.currentTimeMillis());
         lastAlertTime.put(patient, System.currentTimeMillis());
         

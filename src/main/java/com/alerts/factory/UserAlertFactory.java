@@ -1,7 +1,7 @@
 package com.alerts.factory;
 
 import com.alerts.Alert;
-import com.alerts.UserAlert;
+import com.alerts.alerts.UserAlert;
 
 public class UserAlertFactory extends AlertFactory {
     private final String message;

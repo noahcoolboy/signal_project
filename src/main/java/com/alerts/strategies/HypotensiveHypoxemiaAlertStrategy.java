@@ -10,7 +10,7 @@ import com.data_management.PatientRecord;
 public class HypotensiveHypoxemiaAlertStrategy implements AlertStrategy {
 
     @Override
-    public Alert evaluate(Patient patient) {
+    public Alert checkAlert(Patient patient) {
         List<PatientRecord> systolicRecords = patient.getRecords("SystolicPressure", 1);
         List<PatientRecord> diastolicRecords = patient.getRecords("DiastolicPressure", 1);
         if (systolicRecords.isEmpty() || diastolicRecords.isEmpty()) {

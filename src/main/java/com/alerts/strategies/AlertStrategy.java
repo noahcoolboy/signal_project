@@ -5,9 +5,9 @@ import com.data_management.Patient;
 
 public interface AlertStrategy {
     /**
-     * Evaluates the patient's condition and returns an appropriate Alert if needed.
+     * Checks if an alert should be created for the patient, and if so, creates it. Returns null otherwise.
      * @param patient the patient to evaluate
      * @return an Alert if a condition is detected, null otherwise
      */
-    Alert evaluate(Patient patient);
+    Alert checkAlert(Patient patient);
 }

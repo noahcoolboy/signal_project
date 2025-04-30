@@ -10,7 +10,7 @@ import com.data_management.PatientRecord;
 public class BloodSaturationAlertStrategy implements AlertStrategy {
 
     @Override
-    public Alert evaluate(Patient patient) {
+    public Alert checkAlert(Patient patient) {
         List<PatientRecord> records = patient.getRecords("Saturation", 60 * 10 + 5); // Blood saturation is given every second, so we need 10 minutes of data
         if (records.isEmpty()) {
             return null;

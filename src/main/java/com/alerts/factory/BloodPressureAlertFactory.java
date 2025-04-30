@@ -1,7 +1,7 @@
 package com.alerts.factory;
 
 import com.alerts.Alert;
-import com.alerts.BloodPressureAlert;
+import com.alerts.alerts.BloodPressureAlert;
 
 public class BloodPressureAlertFactory extends AlertFactory {
     private final int systolic;

@@ -13,7 +13,7 @@ public class EcgAlertStrategy implements AlertStrategy {
     private static final double THRESHOLD_MULTIPLIER = 1.5;
 
     @Override
-    public Alert evaluate(Patient patient) {
+    public Alert checkAlert(Patient patient) {
         List<PatientRecord> records = patient.getRecords("ECG", 20);
         if (records.size() < WINDOW_SIZE) {
             return null; // not enough data

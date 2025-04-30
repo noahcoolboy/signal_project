@@ -10,7 +10,7 @@ import com.data_management.PatientRecord;
 public class BloodPressureAlertStrategy implements AlertStrategy {
 
     @Override
-    public Alert evaluate(Patient patient) {
+    public Alert checkAlert(Patient patient) {
         int systolic = -1;
         int diastolic = -1;
         String condition = null;

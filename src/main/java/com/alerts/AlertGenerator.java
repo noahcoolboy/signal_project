@@ -46,7 +46,7 @@ public class AlertGenerator {
      */
     public void evaluateData(Patient patient) {
         for(AlertStrategy strategy : alertStrategies) {
-            Alert alert = strategy.evaluate(patient);
+            Alert alert = strategy.checkAlert(patient);
             if (alert != null) {
                 triggerAlert(alert);
             }

@@ -1,4 +1,6 @@
-package com.alerts;
+package com.alerts.alerts;
+
+import com.alerts.Alert;
 
 public class EcgAlert extends Alert {
     private double heartRate;

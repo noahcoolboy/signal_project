@@ -1,7 +1,7 @@
 package com.alerts.factory;
 
 import com.alerts.Alert;
-import com.alerts.EcgAlert;
+import com.alerts.alerts.EcgAlert;
 
 public class EcgAlertFactory extends AlertFactory {
     private final double heartRate;
