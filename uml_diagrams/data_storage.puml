@@ -1,0 +1,82 @@
+@startuml Data Storage System
+
+package com.security {
+    enum UserRole {
+        ADMIN
+        DOCTOR
+        NURSE
+        PATIENT
+    }
+
+    class User {
+        - userId: int
+        - username: String
+        - password: String
+        - role: UserRole
+    }
+
+    class Session {
+        - sessionId: String
+        - user: User
+        - startTime: long
+
+        + getUser(): User
+        + getSessionId(): String
+        + getStartTime(): long
+        + getEndTime(): long
+    }
+
+    class AccessController {
+        - activeSessions: Map<String, Session>
+
+        + login(username: String, password: String): Session
+        + logout(sessionId: String): void
+        + hasAccess(user: User, patientId: int): boolean
+    }
+}
+
+package com.data_management {
+    class DataRetriever {
+        + getPatientIds(): int[]
+        + getPatientData(patientId: int): List<PatientRecord>
+        + getPatientData(patientId: int, startTime: long, endTime: long): List<PatientRecord>
+    }
+
+    class DataStorage {
+        - patientMap: Map<Integer, Patient>
+
+        + addPatientData(patientId: int, measurementValue: double, recordType: String, timestamp: long): void
+        + getRecords(patientId: int, startTime: long, endTime: long): List<PatientRecord>
+        + getAllPatients(): List<Patient>
+    }
+
+    class Patient {
+        - patientId: int
+        - patientRecords: List<PatientRecord>
+
+        + addRecord(measurementValue: double, recordType: String, timestamp: long): void
+        + getRecords(startTime: long, endTime: long): List<PatientRecord>
+    }
+
+    class PatientRecord {
+        - patientId: int
+        - recordType: String
+        - measurementValue: double
+        - timestamp: long
+        + getPatientId(): int
+        + getMeasurementValue(): double
+        + getTimestamp(): long
+        + getRecordType(): String
+    }
+}
+
+DataStorage "1" o-- "0..*" Patient : manages
+Patient "1" *-- "0..*" PatientRecord : owns
+Session --> User : belongs to
+AccessController ..> User : authenticates
+AccessController --> Session : manages
+User --|> UserRole : has
+Session ..> DataRetriever : accesses data via
+DataRetriever ..> AccessController : verifies access using
+DataRetriever --> DataStorage : retrieves data from
+@enduml
