@@ -21,7 +21,7 @@ public class BloodPressureAlertStrategy implements AlertStrategy {
                 continue;
             
             // Check for range violations
-            double value = records.getLast().getMeasurementValue();
+            double value = records.get(records.size() - 1).getMeasurementValue();
             if(type.equals("SystolicPressure")) {
                 systolic = (int) value;
                 if(value < 90)

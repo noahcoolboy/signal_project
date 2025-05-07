@@ -1,0 +1,45 @@
+@startuml CHMS_Data_Ingestion
+title Data Access Layer
+interface DataListener {
+  +startListening(): void
+  +stopListening(): void
+  +setDataHandler(handler: DataHandler): void
+}
+
+interface DataHandler {
+  +handleRawData(rawData: String): void
+}
+
+class DataParser {
+  +parse(rawData: String): ParsedData
+  +validate(data: ParsedData): boolean
+}
+
+class DataSourceAdapter {
+  -dataStorage: DataStorage
+  +processData(parsedData: ParsedData): void
+}
+
+class TCPDataListener {
+  -port: int
+  +startListening(): void
+  +stopListening(): void
+}
+
+class ParsedData {
+  -patientId: int
+  -measurements: Map<String, Double>
+  -timestamp: long
+}
+
+' Relationships
+DataListener <|-- TCPDataListener
+DataListener --> DataHandler : «notifies»
+DataHandler --> DataParser : «delegates parsing»
+DataParser --> ParsedData : «creates»
+DataHandler --> DataSourceAdapter : «forwards processed data»
+DataSourceAdapter --> DataStorage : «stores»
+
+
+
+@enduml

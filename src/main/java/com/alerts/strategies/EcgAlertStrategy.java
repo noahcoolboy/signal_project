@@ -20,7 +20,7 @@ public class EcgAlertStrategy implements AlertStrategy {
         }
 
         // Calculate heart rate from ECG data (simplified)
-        double heartRate = records.getLast().getMeasurementValue(); // TODO
+        double heartRate = records.get(records.size() - 1).getMeasurementValue(); // TODO
 
         for (int i = WINDOW_SIZE; i < records.size(); i++) {
             double sum = 0;

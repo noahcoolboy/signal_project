@@ -1,0 +1,71 @@
+@startuml PatientDataMatchingSystem
+title Patient Data Matching System
+
+' Classes from existing code
+package com.data_management {
+  
+
+class DataStorage {
+  +getInstance(): DataStorage
+  +addPatientData(patientId: int, measurementValue: double, recordType: String, timestamp: long): void
+  +getRecords(patientId: int, startTime: long, endTime: long): List<PatientRecord>
+  +getAllPatients(): List<Patient>
+}
+
+class Patient {
+  -patientId: int
+  -patientRecords: List<PatientRecord>
+  +getPatientId(): int
+  +addRecord(measurementValue: double, recordType: String, timestamp: long): void
+  +getRecords(startTime: long, endTime: long): List<PatientRecord>
+  +getRecords(label: String, count: int): List<PatientRecord>
+}
+
+class PatientRecord {
+  -patientId: int
+  -recordType: String
+  -measurementValue: double
+  -timestamp: long
+  +getPatientId(): int
+  +getMeasurementValue(): double
+  +getTimestamp(): long
+  +getRecordType(): String
+}
+
+' New classes for patient matching
+class PatientIdentifier {
+  +matchPatient(incomingId: int): HospitalPatient
+  +validateMatch(incomingId: int, hospitalId: int): boolean
+}
+
+class HospitalPatient {
+  -patientId: int
+  -name: String
+  -medicalHistory: String
+  +getName(): String
+  +getMedicalHistory(): String
+  +getPatientId(): int
+}
+
+class IdentityManager {
+  +handleMismatch(incomingId: int): void
+  +logAnomaly(description: String): void
+  +createTemporaryPatient(incomingId: int): HospitalPatient
+}
+}
+' Relationships
+DataStorage "1" *-- "*" Patient
+Patient "1" *-- "*" PatientRecord
+
+PatientIdentifier --> HospitalPatient : "fetches\npatient details"
+PatientIdentifier --> IdentityManager : "reports\nmismatches"
+PatientIdentifier --> DataStorage : "verifies\nexisting patients"
+
+DataStorage --> PatientIdentifier : "uses for\npatient matching"
+
+IdentityManager --> HospitalPatient : "may create\ntemporary records"
+
+
+
+
+@enduml

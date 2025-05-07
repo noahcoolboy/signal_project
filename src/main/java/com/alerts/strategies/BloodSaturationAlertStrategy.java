@@ -16,7 +16,7 @@ public class BloodSaturationAlertStrategy implements AlertStrategy {
             return null;
         }
 
-        double latestValue = records.getLast().getMeasurementValue();
+        double latestValue = records.get(records.size() - 1).getMeasurementValue();
 
         if (latestValue < 92.0) {
             return new BloodSaturationAlertFactory(latestValue)
@@ -25,7 +25,7 @@ public class BloodSaturationAlertStrategy implements AlertStrategy {
 
         // Check for rapid drop (5%+ drop in 10-minute window)
         if (records.size() >= 2) {
-            PatientRecord latest = records.getLast();
+            PatientRecord latest = records.get(records.size() - 1);
             for (int i = records.size() - 2; i >= 0; i--) {
                 PatientRecord previous = records.get(i);
                 long timeDiff = latest.getTimestamp() - previous.getTimestamp();
