@@ -1,45 +1,114 @@
-@startuml CHMS_Data_Ingestion
-title Data Access Layer
-interface DataListener {
-  +startListening(): void
-  +stopListening(): void
-  +setDataHandler(handler: DataHandler): void
+@startuml Data Source System
+title Data Source System UML Diagram
+
+package com.data_sources {
+  interface DataListener {
+    + initialize(): void
+    + start(): void
+    + stop(): void
+    + setDataParser(parser: DataParser): void
+  }
+
+  class TCPDataListener implements DataListener {
+    - port: int
+    - serverSocket: ServerSocket
+    - running: boolean
+    - parser: DataParser
+    
+    + TCPDataListener(port: int)
+    + initialize(): void
+    + start(): void
+    + stop(): void
+    + setDataParser(parser: DataParser): void
+    - handleConnection(socket: Socket): void
+  }
+
+  class WebSocketDataListener implements DataListener {
+    - port: int
+    - server: WebSocketServer
+    - running: boolean
+    - parser: DataParser
+    
+    + WebSocketDataListener(port: int)
+    + initialize(): void
+    + start(): void
+    + stop(): void
+    + setDataParser(parser: DataParser): void
+    - onMessage(connection: WebSocket, message: String): void
+  }
+
+  class FileDataListener implements DataListener {
+    - directory: String
+    - watchService: WatchService
+    - running: boolean
+    - parser: DataParser
+    
+    + FileDataListener(directory: String)
+    + initialize(): void
+    + start(): void
+    + stop(): void
+    + setDataParser(parser: DataParser): void
+    - processFile(file: Path): void
+  }
+
+  interface DataParser {
+    + parse(rawData: String): ParsedData
+    + getSupportedFormat(): String
+  }
+
+  class JSONDataParser implements DataParser {
+    + parse(rawData: String): ParsedData
+    + getSupportedFormat(): String
+  }
+
+  class CSVDataParser implements DataParser {
+    + parse(rawData: String): ParsedData
+    + getSupportedFormat(): String
+  }
+
+  class ParsedData {
+    - patientId: int
+    - timestamp: long
+    - recordType: String
+    - measurementValue: double
+    
+    + ParsedData(patientId: int, timestamp: long, recordType: String, measurementValue: double)
+    + getPatientId(): int
+    + getTimestamp(): long
+    + getRecordType(): String
+    + getMeasurementValue(): double
+  }
+
+  class DataSourceAdapter {
+    - dataStorage: DataStorage
+    - listeners: List<DataListener>
+    
+    + DataSourceAdapter(dataStorage: DataStorage)
+    + addListener(listener: DataListener, parser: DataParser): void
+    + removeListener(listener: DataListener): void
+    + startAllListeners(): void
+    + stopAllListeners(): void
+    + processData(parsedData: ParsedData): void
+  }
+
+  class DataSourceManager {
+    - adapter: DataSourceAdapter
+    
+    + DataSourceManager(dataStorage: DataStorage)
+    + initializeTCPSource(port: int, parser: DataParser): void
+    + initializeWebSocketSource(port: int, parser: DataParser): void
+    + initializeFileSource(directory: String, parser: DataParser): void
+    + startAllSources(): void
+    + stopAllSources(): void
+  }
 }
 
-interface DataHandler {
-  +handleRawData(rawData: String): void
-}
-
-class DataParser {
-  +parse(rawData: String): ParsedData
-  +validate(data: ParsedData): boolean
-}
-
-class DataSourceAdapter {
-  -dataStorage: DataStorage
-  +processData(parsedData: ParsedData): void
-}
-
-class TCPDataListener {
-  -port: int
-  +startListening(): void
-  +stopListening(): void
-}
-
-class ParsedData {
-  -patientId: int
-  -measurements: Map<String, Double>
-  -timestamp: long
-}
-
-' Relationships
-DataListener <|-- TCPDataListener
-DataListener --> DataHandler : «notifies»
-DataHandler --> DataParser : «delegates parsing»
-DataParser --> ParsedData : «creates»
-DataHandler --> DataSourceAdapter : «forwards processed data»
-DataSourceAdapter --> DataStorage : «stores»
-
-
-
+DataListener "1" --> "1" DataParser : uses
+DataSourceAdapter "1" --> "0..*" DataListener : manages
+DataSourceAdapter --> ParsedData : processes
+DataSourceManager --> DataSourceAdapter : configures
+TCPDataListener ..> ParsedData : creates via parser
+WebSocketDataListener ..> ParsedData : creates via parser
+FileDataListener ..> ParsedData : creates via parser
+DataParser ..> ParsedData : produces
 @enduml
