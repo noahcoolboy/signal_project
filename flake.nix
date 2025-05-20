@@ -15,13 +15,12 @@
           pname = "cardio_generator";
           version = "1.0.0";
           src = ./.;
-          mvnHash = "sha256-rcEXEqruIKVnV1jzbLidkCXgs+cr+0CQzvnXZvvuzcY=";
+          mvnHash = "sha256-fp9B8f8gc5TWgBHCKe422E+DxCzuMA4QNLbxB7mtJ/k=";
           nativeBuildInputs = [ pkgs.makeWrapper ];
           installPhase = ''
             mkdir -p $out/bin $out/share/cardio_generator
             cp target/cardio_generator-1.0-SNAPSHOT.jar $out/share/cardio_generator/cardio_generator.jar
-            makeWrapper ${pkgs.jre_minimal}/bin/java $out/bin/cardio-generator \
-              --add-flags "-jar $out/share/cardio_generator/cardio_generator.jar"
+            makeWrapper ${pkgs.jre_minimal}/bin/java $out/bin/cardio-generator --add-flags "-jar $out/share/cardio_generator/cardio_generator.jar"
           '';
         };
       }
