@@ -31,6 +31,11 @@ jobs:
         uses: hustcer/setup-nu@v3
         with:
           version: "0.104"
+      - name: Checkout badges branch
+        uses: actions/checkout@v4
+        with:
+          ref: badges
+          path: badges
       - name: Generate badges
         shell: nu {0}
         run: |
@@ -44,12 +49,13 @@ jobs:
             | insert color {|$kv| $color | where min <= $kv.value | get 0.color}
             | each {|$row|
               http get $'https://img.shields.io/badge/($row.name | str downcase)-(($row.value | into string) + "%" | url encode)-($row.color)'
-              | save -f (($row.name | str downcase) + ".svg")
+              | save -f ("badges/" + ($row.name | str downcase) + ".svg")
             }
       - name: Upload badges
         uses: EndBug/add-and-commit@v9
         with:
           add: ./*.svg
+          cwd: badges
           new_branch: badges
           message: "Update badges"
           default_author: github_actions
