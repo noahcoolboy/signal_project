@@ -45,7 +45,7 @@ jobs:
             | transpose name value
             | group-by { $in.name | split row '_' | get 0 }
             | transpose name value
-            | update value {|$row| ($row.value | get 1).value / ($row.value | math sum).value}
+            | update value {|$row| ($row.value | get 1).value / ($row.value | math sum).value * 100 | math round --precision 1}
             | insert color {|$kv| $color | where min <= $kv.value | get 0.color}
             | each {|$row|
               http get $'https://img.shields.io/badge/($row.name | str downcase)-(($row.value | into string) + "%" | url encode)-($row.color)'
