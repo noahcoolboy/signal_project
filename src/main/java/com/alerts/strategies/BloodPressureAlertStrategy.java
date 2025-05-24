@@ -7,8 +7,30 @@ import com.alerts.factories.BloodPressureAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
+/**
+ * Strategy for detecting blood pressure abnormalities and generating appropriate alerts.
+ * This class implements the AlertStrategy interface to provide specific logic
+ * for monitoring both systolic and diastolic blood pressure values.
+ * It checks for values outside normal ranges and for rapid increases or decreases.
+ */
 public class BloodPressureAlertStrategy implements AlertStrategy {
+    
+    /**
+     * Constructs a new BloodPressureAlertStrategy with default parameters.
+     */
+    public BloodPressureAlertStrategy() {
+        // Default constructor
+    }
 
+    /**
+     * Checks if a blood pressure alert should be generated based on the patient's data.
+     * This method analyzes the patient's recent blood pressure records and generates
+     * an alert if an abnormality is detected, such as values outside normal ranges
+     * or rapid increases/decreases.
+     *
+     * @param patient The patient whose blood pressure data should be analyzed
+     * @return A blood pressure alert if an abnormality is detected, or null if no alert is needed
+     */
     @Override
     public Alert checkAlert(Patient patient) {
         int systolic = -1;

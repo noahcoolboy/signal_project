@@ -102,6 +102,9 @@ public class DataStorage {
      * and evaluates patient data.
      * 
      * @param args command line arguments
+     * @throws InterruptedException if the thread is interrupted while sleeping
+     * @throws URISyntaxException if the WebSocket URI is invalid
+     * @throws IOException if there is an error in reading or writing data
      */
     public static void main(String[] args) throws InterruptedException, URISyntaxException, IOException {
         long time = 0;

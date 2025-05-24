@@ -7,8 +7,31 @@ import com.alerts.factories.HypotensiveHypoxemiaAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
+/**
+ * Strategy for detecting combined hypotensive (low blood pressure) and hypoxemia (low blood oxygen) conditions.
+ * This class implements the AlertStrategy interface to provide specific logic
+ * for monitoring both blood pressure and blood oxygen saturation levels simultaneously.
+ * It generates alerts when both conditions are present at the same time, which can indicate
+ * a serious medical emergency.
+ */
 public class HypotensiveHypoxemiaAlertStrategy implements AlertStrategy {
 
+    /**
+     * Constructs a new HypotensiveHypoxemiaAlertStrategy with default parameters.
+     */
+    public HypotensiveHypoxemiaAlertStrategy() {
+        // Default constructor
+    }
+
+    /**
+     * Checks if a hypotensive hypoxemia alert should be generated based on the patient's data.
+     * This method analyzes the patient's recent blood pressure and oxygen saturation records
+     * and generates an alert if both hypotension (low blood pressure) and hypoxemia (low blood oxygen)
+     * are detected simultaneously.
+     *
+     * @param patient The patient whose data should be analyzed
+     * @return A hypotensive hypoxemia alert if both conditions are detected, or null if no alert is needed
+     */
     @Override
     public Alert checkAlert(Patient patient) {
         List<PatientRecord> systolicRecords = patient.getRecords("SystolicPressure", 1);

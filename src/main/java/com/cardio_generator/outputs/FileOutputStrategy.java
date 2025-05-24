@@ -8,7 +8,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A {@link OutputStrategy} which outputs the data into a user-provided directory.
+ * An implementation of the OutputStrategy interface that writes data to files.
+ * This strategy outputs the data into a user-provided directory.
  * Each file will be named after the label of the data it contains.
  * Data is formatted as:
  * Patient ID: %d, Timestamp: %d, Label: %s, Data: %s%n
@@ -38,7 +39,6 @@ public class FileOutputStrategy implements OutputStrategy {
      * @param timestamp the time at which the data was generated
      * @param label what this data represents (this will also be used as the file name)
      * @param data the actual data to be output
-     * @throws IOException if there is an error creating directories or writing to the file
      */
     @Override
     public void output(int patientId, long timestamp, String label, String data) {

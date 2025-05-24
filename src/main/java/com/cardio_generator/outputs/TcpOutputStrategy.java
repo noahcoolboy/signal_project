@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.util.concurrent.Executors;
 
 /**
- * An {@link OutputStrategy} which outputs the data to connected TCP clients.
+ * An implementation of the OutputStrategy interface that sends data over TCP.
  * This strategy listens for incoming TCP connections on a specified port.
  * Data is formatted as comma-separated values (without spacing):
  * PatientID,Timestamp,Label,Data
@@ -21,7 +21,6 @@ public class TcpOutputStrategy implements OutputStrategy {
     /**
      * Constructs a {@code TcpOutputStrategy} listening on a given port.
      * @param port the port which will be listening for connection.
-     * @throws IOException if there is an error creating the server socket or accepting client connections
      */
     public TcpOutputStrategy(int port) {
         try {

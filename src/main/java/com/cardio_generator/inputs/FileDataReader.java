@@ -11,9 +11,9 @@ import com.data_management.DataStorage;
 import com.data_management.PatientRecord;
 
 /**
- * A {@link OutputStrategy} which outputs the data into a user-provided directory.
- * Each file will be named after the label of the data it contains.
- * Data is formatted as:
+ * A file-based implementation of the DataReader interface.
+ * This class reads data from files in a specified directory and loads it into the DataStorage system.
+ * It expects files to contain data in a specific format:
  * Patient ID: %d, Timestamp: %d, Label: %s, Data: %s%n
  * where %d is a decimal integer and %s is a string.
  */
@@ -36,9 +36,9 @@ public class FileDataReader implements DataReader {
     }
 
     /**
-     * Reads data from files in the specified base directory.
-     * @return a list of {@link PatientRecord}s read from the files.
-     * @throws IOException if there is an error reading the files
+     * Reads data from files in the specified base directory and loads it into the provided storage.
+     * 
+     * @param storage the DataStorage instance where the data will be stored
      */
     @Override
     public void readData(DataStorage storage) {

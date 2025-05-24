@@ -7,8 +7,30 @@ import com.alerts.factories.BloodSaturationAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
+/**
+ * Strategy for detecting blood oxygen saturation abnormalities and generating appropriate alerts.
+ * This class implements the AlertStrategy interface to provide specific logic
+ * for monitoring blood oxygen saturation levels.
+ * It checks for values below normal range and for rapid drops in saturation.
+ */
 public class BloodSaturationAlertStrategy implements AlertStrategy {
 
+    /**
+     * Constructs a new BloodSaturationAlertStrategy with default parameters.
+     */
+    public BloodSaturationAlertStrategy() {
+        // Default constructor
+    }
+
+    /**
+     * Checks if a blood saturation alert should be generated based on the patient's data.
+     * This method analyzes the patient's recent blood oxygen saturation records and generates
+     * an alert if an abnormality is detected, such as values below normal range
+     * or rapid drops in saturation.
+     *
+     * @param patient The patient whose blood oxygen saturation data should be analyzed
+     * @return A blood saturation alert if an abnormality is detected, or null if no alert is needed
+     */
     @Override
     public Alert checkAlert(Patient patient) {
         List<PatientRecord> records = patient.getRecords("Saturation", 60 * 10 + 5); // Blood saturation is given every second, so we need 10 minutes of data

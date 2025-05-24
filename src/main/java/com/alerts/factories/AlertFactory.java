@@ -8,6 +8,13 @@ import com.alerts.Alert;
  */
 public abstract class AlertFactory {
     /**
+     * Constructs a new AlertFactory.
+     * This is the default constructor for the abstract factory class.
+     */
+    protected AlertFactory() {
+        // Default constructor
+    }
+    /**
      * Creates an alert of a specific type based on the implementation.
      * 
      * @param patientId the ID of the patient associated with the alert
