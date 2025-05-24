@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.data_management.DataReader;
 import com.data_management.DataStorage;
 import com.data_management.PatientRecord;
 
@@ -16,7 +17,7 @@ import com.data_management.PatientRecord;
  * Patient ID: %d, Timestamp: %d, Label: %s, Data: %s%n
  * where %d is a decimal integer and %s is a string.
  */
-public class FileInputStrategy implements InputStrategy {
+public class FileDataReader implements DataReader {
 
     private String baseDirectory;
 
@@ -30,7 +31,7 @@ public class FileInputStrategy implements InputStrategy {
      * Constructs a {@code FileOutputStrategy} with a specified base directory.
      * @param baseDirectory the base directory where the output files will be created.
      */
-    public FileInputStrategy(String baseDirectory) {
+    public FileDataReader(String baseDirectory) {
         this.baseDirectory = baseDirectory;
     }
 
@@ -39,7 +40,8 @@ public class FileInputStrategy implements InputStrategy {
      * @return a list of {@link PatientRecord}s read from the files.
      * @throws IOException if there is an error reading the files
      */
-    public void read(DataStorage storage) {
+    @Override
+    public void readData(DataStorage storage) {
         for(File file : new File(baseDirectory).listFiles()) {
             if (file.isFile()) {
                 try {
@@ -78,4 +80,5 @@ public class FileInputStrategy implements InputStrategy {
             }
         }
     }
+
 }

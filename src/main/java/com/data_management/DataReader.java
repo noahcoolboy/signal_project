@@ -14,4 +14,11 @@ public interface DataReader {
      * @throws IOException if there is an error reading the data
      */
     void readData(DataStorage dataStorage) throws IOException;
+
+    /**
+     * Disconnects the data reader from its source.
+     * This is a no-op for synchronous readers, but may be necessary for asynchronous
+     * readers (such as websockets).
+     */
+    default void disconnect() {}
 }

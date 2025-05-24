@@ -43,8 +43,8 @@ public class BloodPressureAlertStrategy implements AlertStrategy {
 
             // Check for consistent increase / decrease
             double prev = records.get(0).getMeasurementValue();
-            boolean increaseFlag = true;
-            boolean decreaseFlag = true;
+            boolean increaseFlag = records.size() > 3;
+            boolean decreaseFlag = records.size() > 3;
             for (int i = 1; i < records.size(); i++) {
                 double current = records.get(i).getMeasurementValue();
                 if (prev - current <= 10) {

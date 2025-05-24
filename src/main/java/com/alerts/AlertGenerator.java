@@ -63,5 +63,8 @@ public class AlertGenerator {
      */
     private void triggerAlert(Alert alert) {
         // Implementation might involve logging the alert or notifying staff
+        System.out.println("[ALERT] Patient ID: " + alert.getPatientId() +
+                           ", Condition: " + alert.getCondition() +
+                           ", Timestamp: " + alert.getTimestamp());
     }
 }

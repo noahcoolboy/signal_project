@@ -1,10 +1,18 @@
 package com.data_management;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import com.alerts.AlertGenerator;
+import com.cardio_generator.inputs.FileDataReader;
+import com.cardio_generator.inputs.WebSocketDataReader;
 
 /**
  * Manages storage and retrieval of patient data within a healthcare monitoring
@@ -95,24 +103,49 @@ public class DataStorage {
      * 
      * @param args command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, URISyntaxException, IOException {
+        long time = 0;
+
         // Singleton instance retrieval
         DataStorage storage = DataStorage.getInstance();
 
         // Read data if a DataReader is implemented and available
-        // reader.readData(storage);
-
-        List<PatientRecord> records = storage.getRecords(1, 1700000000000L, 1800000000000L);
-        for (PatientRecord record : records) {
-            System.out.println("Record for Patient ID: " + record.getPatientId() +
-                    ", Type: " + record.getRecordType() +
-                    ", Data: " + record.getMeasurementValue() +
-                    ", Timestamp: " + record.getTimestamp());
-        }
-
+        // DataReader reader = new FileDataReader("data/input");
+        DataReader reader = new WebSocketDataReader(new URI("ws://localhost:8080"));
+        reader.readData(storage);
+        
         AlertGenerator alertGenerator = new AlertGenerator(storage);
-        for (Patient patient : storage.getAllPatients()) {
-            alertGenerator.evaluateData(patient);
+
+        Set<Integer> patientIds = new HashSet<>();
+
+        while(true) {
+            boolean emptyFlag = true;
+            Thread.sleep(5000);
+
+            for(Patient patient : storage.getAllPatients()) {
+                if(!patientIds.contains(patient.getPatientId())) {
+                    patientIds.add(patient.getPatientId());
+                    System.out.println("Now Monitoring Patient: " + patient.getPatientId());
+                }
+                List<PatientRecord> records = storage.getRecords(patient.getPatientId(), time, System.currentTimeMillis());
+                /*for (PatientRecord record : records) {
+                    System.out.println("Record for Patient ID: " + record.getPatientId() +
+                            ", Type: " + record.getRecordType() +
+                            ", Data: " + record.getMeasurementValue() +
+                            ", Timestamp: " + record.getTimestamp());
+                }*/
+
+                alertGenerator.evaluateData(patient);
+
+                if(records.size() > 0)
+                    emptyFlag = false;
+            }
+
+            time = System.currentTimeMillis();
+            if(emptyFlag)
+                break;
         }
+
+        reader.disconnect();
     }
 }
