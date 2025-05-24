@@ -26,3 +26,30 @@ jobs:
           path: result/share/cardio_generator/cardio_generator.jar
         env:
           VERSION: ${{ env.VERSION }}
+
+      - name: Setup nushell
+        uses: hustcer/setup-nu@v3
+        with:
+          version: "0.104"
+      - name: Generate badges
+        shell: nu {0}
+        run: |
+          let color = [[min, color]; [90, '4c1'], [80, '97CA00'], [70, 'a4a61d'], [60, 'dfb317'], [50, 'fe7d37'], [0, 'e05d44']]
+          open result/cov.csv
+            | math sum
+            | transpose name value
+            | group-by { $in.name | split row '_' | get 0 }
+            | transpose name value
+            | update value {|$row| ($row.value | get 1).value / ($row.value | math sum).value}
+            | insert color {|$kv| $color | where min <= $kv.value | get 0.color}
+            | each {|$row|
+              http get $'https://img.shields.io/badge/($row.name | str downcase)-(($row.value | into string) + "%" | url encode)-($row.color)'
+              | save -f (($row.name | str downcase) + ".svg")
+            }
+      - name: Upload badges
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: ./*.svg
+          new_branch: badges
+          message: "Update badges"
+          default_author: github_actions

@@ -20,6 +20,7 @@
           installPhase = ''
             mkdir -p $out/bin $out/share/cardio_generator
             cp target/cardio_generator-1.0-SNAPSHOT.jar $out/share/cardio_generator/cardio_generator.jar
+            cp target/site/jacoco/jacoco.csv $out/cov.csv
             makeWrapper ${pkgs.jre_minimal}/bin/java $out/bin/cardio-generator --add-flags "-jar $out/share/cardio_generator/cardio_generator.jar"
           '';
         };

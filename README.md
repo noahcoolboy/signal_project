@@ -8,6 +8,9 @@ This fork represents my submission for the course project.
 Participating members:
 - Student ID: i6375705
 
+JaCoCo Summary: ![Branch Coverage](https://raw.githubusercontent.com/noahcoolboy/signal_project/refs/heads/badges/branch.svg) ![Instruction Coverage](https://raw.githubusercontent.com/noahcoolboy/signal_project/refs/heads/badges/instruction.svg) ![Line Coverage](https://raw.githubusercontent.com/noahcoolboy/signal_project/refs/heads/badges/line.svg) ![Method Coverage](https://raw.githubusercontent.com/noahcoolboy/signal_project/refs/heads/badges/method.svg)
+
+
 ## Features
 
 - Simulate real-time ECG, blood pressure, blood saturation, and blood levels data.
