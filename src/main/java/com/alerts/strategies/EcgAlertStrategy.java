@@ -1,9 +1,8 @@
 package com.alerts.strategies;
 
 import java.util.List;
-
+import com.alerts.factories.*;
 import com.alerts.Alert;
-import com.alerts.factories.EcgAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 

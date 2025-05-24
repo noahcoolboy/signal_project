@@ -7,6 +7,7 @@ The Cardio Data Simulator is a Java-based application designed to simulate real-
 This fork represents my submission for the course project.  
 Participating members:
 - Student ID: i6375705
+- Student ID: i6393824
 
 JaCoCo Summary: ![Branch Coverage](https://raw.githubusercontent.com/noahcoolboy/signal_project/refs/heads/badges/branch.svg) ![Instruction Coverage](https://raw.githubusercontent.com/noahcoolboy/signal_project/refs/heads/badges/instruction.svg) ![Line Coverage](https://raw.githubusercontent.com/noahcoolboy/signal_project/refs/heads/badges/line.svg) ![Method Coverage](https://raw.githubusercontent.com/noahcoolboy/signal_project/refs/heads/badges/method.svg)
 

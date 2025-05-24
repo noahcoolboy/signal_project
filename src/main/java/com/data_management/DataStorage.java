@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.alerts.AlertGenerator;
-import com.cardio_generator.inputs.FileDataReader;
 import com.cardio_generator.inputs.WebSocketDataReader;
 
 /**
