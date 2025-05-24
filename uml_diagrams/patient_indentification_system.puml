@@ -1,4 +1,4 @@
-@startuml PatientDataMatchingSystem
+@startuml Patient Data Matching System
 title Patient Data Matching System
 
 ' Classes from existing code
