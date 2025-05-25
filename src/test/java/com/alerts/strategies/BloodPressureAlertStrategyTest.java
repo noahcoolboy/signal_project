@@ -107,4 +107,69 @@ public class BloodPressureAlertStrategyTest {
         Alert alert = strategy.checkAlert(patient);
         assertNull(alert, "Should not generate alert if last 3 records are normal");
     }
+
+    @Test
+    void testRapidDiastolicIncrease() {
+        BloodPressureAlertStrategy strategy = new BloodPressureAlertStrategy();
+        Patient patient = new Patient(12345);
+
+        // Simulate a rapid increase in diastolic pressure
+        patient.addRecord(80.0, "DiastolicPressure", System.currentTimeMillis() - 40000);
+        patient.addRecord(90.0, "DiastolicPressure", System.currentTimeMillis() - 30000);
+        patient.addRecord(100.0, "DiastolicPressure", System.currentTimeMillis() - 20000);
+        patient.addRecord(120.0, "DiastolicPressure", System.currentTimeMillis() - 10000);
+
+        Alert alert = strategy.checkAlert(patient);
+        assertNotNull(alert, "Should generate alert for rapid increase in diastolic pressure");
+        assertEquals(alert.getCondition(), "DiastolicPressure is increasing rapidly");
+    }
+
+    @Test
+    void testRapidDiastolicDecrease() {
+        BloodPressureAlertStrategy strategy = new BloodPressureAlertStrategy();
+        Patient patient = new Patient(12345);
+
+        // Simulate a rapid decrease in diastolic pressure
+        patient.addRecord(120.0, "DiastolicPressure", System.currentTimeMillis() - 40000);
+        patient.addRecord(100.0, "DiastolicPressure", System.currentTimeMillis() - 30000);
+        patient.addRecord(80.0, "DiastolicPressure", System.currentTimeMillis() - 20000);
+        patient.addRecord(60.0, "DiastolicPressure", System.currentTimeMillis() - 10000);
+
+        Alert alert = strategy.checkAlert(patient);
+        assertNotNull(alert, "Should generate alert for rapid decrease in diastolic pressure");
+        assertEquals(alert.getCondition(), "DiastolicPressure is decreasing rapidly");
+    }
+
+    @Test
+    void testRapidSystolicIncrease() {
+        BloodPressureAlertStrategy strategy = new BloodPressureAlertStrategy();
+        Patient patient = new Patient(12345);
+
+        // Simulate a rapid increase in systolic pressure
+        patient.addRecord(120.0, "SystolicPressure", System.currentTimeMillis() - 40000);
+        patient.addRecord(135.0, "SystolicPressure", System.currentTimeMillis() - 30000);
+        patient.addRecord(150.0, "SystolicPressure", System.currentTimeMillis() - 20000);
+        patient.addRecord(175.0, "SystolicPressure", System.currentTimeMillis() - 10000);
+
+        Alert alert = strategy.checkAlert(patient);
+        assertNotNull(alert, "Should generate alert for rapid increase in systolic pressure");
+        assertEquals(alert.getCondition(), "SystolicPressure is increasing rapidly");
+    }
+
+    @Test
+    void testRapidSystolicDecrease() {
+        BloodPressureAlertStrategy strategy = new BloodPressureAlertStrategy();
+        Patient patient = new Patient(12345);
+
+        // Simulate a rapid decrease in systolic pressure
+        patient.addRecord(175.0, "SystolicPressure", System.currentTimeMillis() - 40000);
+        patient.addRecord(150.0, "SystolicPressure", System.currentTimeMillis() - 30000);
+        patient.addRecord(135.0, "SystolicPressure", System.currentTimeMillis() - 20000);
+        patient.addRecord(110.0, "SystolicPressure", System.currentTimeMillis() - 10000);
+
+        Alert alert = strategy.checkAlert(patient);
+        assertNotNull(alert, "Should generate alert for rapid decrease in systolic pressure");
+        assertEquals(alert.getCondition(), "SystolicPressure is decreasing rapidly");
+    }
+
 }

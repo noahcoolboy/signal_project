@@ -1,6 +1,8 @@
 package com.alerts.strategies;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.alerts.Alert;
 import com.alerts.factories.BloodSaturationAlertFactory;
@@ -14,6 +16,8 @@ import com.data_management.PatientRecord;
  * It checks for values below normal range and for rapid drops in saturation.
  */
 public class BloodSaturationAlertStrategy implements AlertStrategy {
+
+    Map<Integer, Long> lastAlertTimestamps = new HashMap<>();
 
     /**
      * Constructs a new BloodSaturationAlertStrategy with default parameters.
@@ -46,18 +50,20 @@ public class BloodSaturationAlertStrategy implements AlertStrategy {
         }
 
         // Check for rapid drop (5%+ drop in 10-minute window)
-        if (records.size() >= 60*10+5) {
-            PatientRecord latest = records.get(records.size() - 1);
-            for (int i = records.size() - 2; i >= 0; i--) {
-                PatientRecord previous = records.get(i);
-                long timeDiff = latest.getTimestamp() - previous.getTimestamp();
-                double valueDiff = previous.getMeasurementValue() - latest.getMeasurementValue();
-
-                if (timeDiff <= 10 * 60 * 1000 && valueDiff >= 5.0) {
-                    return new BloodSaturationAlertFactory(latestValue)
-                        .createAlert(String.valueOf(patient.getPatientId()), "Oxygen Saturation dropped rapidly", System.currentTimeMillis());
-                }
-            }
+        double max = Double.MIN_VALUE;
+        double min = Double.MAX_VALUE;
+        for (PatientRecord record : records) {
+            if(record.getTimestamp() < lastAlertTimestamps.getOrDefault(patient.getPatientId(), 0L) || System.currentTimeMillis() - record.getTimestamp() > 10 * 60 * 1000)
+                continue;
+            double value = record.getMeasurementValue();
+            max = Math.max(max, value);
+            min = Math.min(min, value);
+        }
+        double dropPercentage = max - min;
+        if (dropPercentage >= 5.0) {
+            lastAlertTimestamps.put(patient.getPatientId(), System.currentTimeMillis());
+            return new BloodSaturationAlertFactory(latestValue)
+                .createAlert(String.valueOf(patient.getPatientId()), "Oxygen Saturation dropped rapidly", System.currentTimeMillis());
         }
 
         return null;

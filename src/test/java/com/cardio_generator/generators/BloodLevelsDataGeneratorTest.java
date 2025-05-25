@@ -2,6 +2,9 @@ package com.cardio_generator.generators;
 
 import org.junit.jupiter.api.Test;
 
+import com.cardio_generator.outputs.CaptureOutputStrategy;
+import com.data_management.PatientRecord;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
@@ -14,22 +17,23 @@ class BloodLevelsDataGeneratorTest {
     void testGenerateBloodLevels() {
         int patientId = 1;
         BloodLevelsDataGenerator generator = new BloodLevelsDataGenerator(5);
-        CapturingOutputStrategy outputStrategy = new CapturingOutputStrategy();
+        CaptureOutputStrategy outputStrategy = new CaptureOutputStrategy();
 
         generator.generate(patientId, outputStrategy);
-        List<CapturingOutputStrategy.Output> outputs = outputStrategy.getOutputs();
+        List<PatientRecord> outputs = outputStrategy.getOutputs();
 
         // Should produce exactly 3 outputs
         assertEquals(3, outputs.size());
 
         // Check each label exists
-        assertTrue(outputs.stream().anyMatch(o -> o.label.equals("Cholesterol")));
-        assertTrue(outputs.stream().anyMatch(o -> o.label.equals("WhiteBloodCells")));
-        assertTrue(outputs.stream().anyMatch(o -> o.label.equals("RedBloodCells")));
+        assertTrue(outputs.stream().anyMatch(o -> o.getRecordType().equals("Cholesterol")));
+        assertTrue(outputs.stream().anyMatch(o -> o.getRecordType().equals("WhiteBloodCells")));
+        assertTrue(outputs.stream().anyMatch(o -> o.getRecordType().equals("RedBloodCells")));
 
-        // Check that values are parseable as doubles
-        for (CapturingOutputStrategy.Output output : outputs) {
-            assertDoesNotThrow(() -> Double.parseDouble(output.data), "Data not parseable as double: " + output.data);
+        // Check that values are valid doubles
+        for (PatientRecord output : outputs) {
+            // No need to parse, as PatientRecord already stores the value as a double
+            assertTrue(output.getMeasurementValue() > 0, "Value should be greater than 0");
         }
     }
 

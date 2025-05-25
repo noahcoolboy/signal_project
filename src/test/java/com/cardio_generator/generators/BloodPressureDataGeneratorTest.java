@@ -2,6 +2,9 @@ package com.cardio_generator.generators;
 
 import org.junit.jupiter.api.Test;
 
+import com.cardio_generator.outputs.CaptureOutputStrategy;
+import com.data_management.PatientRecord;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
@@ -14,26 +17,28 @@ class BloodPressureDataGeneratorTest {
     void testGenerateBloodPressure() {
         int patientId = 1;
         BloodPressureDataGenerator generator = new BloodPressureDataGenerator(5);
-        CapturingOutputStrategy outputStrategy = new CapturingOutputStrategy();
+        CaptureOutputStrategy outputStrategy = new CaptureOutputStrategy();
 
         generator.generate(patientId, outputStrategy);
-        List<CapturingOutputStrategy.Output> outputs = outputStrategy.getOutputs();
+        List<PatientRecord> outputs = outputStrategy.getOutputs();
 
         // Should produce exactly 2 outputs
         assertEquals(2, outputs.size());
 
         boolean systolicFound = false, diastolicFound = false;
 
-        for (CapturingOutputStrategy.Output output : outputs) {
-            double value = Double.parseDouble(output.data);
-            if (output.label.equals("SystolicPressure")) {
+        for (PatientRecord output : outputs) {
+            double value = output.getMeasurementValue();
+            String recordType = output.getRecordType();
+            
+            if (recordType.equals("SystolicPressure")) {
                 systolicFound = true;
                 assertTrue(value >= 90 && value <= 180, "Systolic value out of range: " + value);
-            } else if (output.label.equals("DiastolicPressure")) {
+            } else if (recordType.equals("DiastolicPressure")) {
                 diastolicFound = true;
                 assertTrue(value >= 60 && value <= 120, "Diastolic value out of range: " + value);
             } else {
-                fail("Unexpected label: " + output.label);
+                fail("Unexpected label: " + recordType);
             }
         }
 

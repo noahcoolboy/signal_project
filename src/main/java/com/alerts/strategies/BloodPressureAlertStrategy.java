@@ -50,7 +50,7 @@ public class BloodPressureAlertStrategy implements AlertStrategy {
                     condition = type + " is too low";
                 else if(value > 180)
                     condition = type + " is too high";
-            } else if(type.equals("DiastolicPressure")) {
+            } else {
                 diastolic = (int) value;
                 if(value < 60)
                     condition = type + " is too low";
@@ -65,13 +65,14 @@ public class BloodPressureAlertStrategy implements AlertStrategy {
 
             // Check for consistent increase / decrease
             double prev = records.get(0).getMeasurementValue();
-            boolean increaseFlag = records.size() > 3;
-            boolean decreaseFlag = records.size() > 3;
+            boolean increaseFlag = records.size() >= 3;
+            boolean decreaseFlag = records.size() >= 3;
             for (int i = 1; i < records.size(); i++) {
                 double current = records.get(i).getMeasurementValue();
-                if (prev - current <= 10) {
+                if (prev - current < 10) {
                     decreaseFlag = false;
-                } else if (current - prev <= 10) {
+                }
+                if (current - prev < 10) {
                     increaseFlag = false;
                 }
                 prev = current;

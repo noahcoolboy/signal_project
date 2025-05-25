@@ -2,6 +2,9 @@ package com.cardio_generator.generators;
 
 import org.junit.jupiter.api.Test;
 
+import com.cardio_generator.outputs.CaptureOutputStrategy;
+import com.data_management.PatientRecord;
+
 import static org.junit.jupiter.api.Assertions.*;
 class AlertGeneratorTest {
 
@@ -9,22 +12,25 @@ class AlertGeneratorTest {
     void testAlertTriggeringAndResolution() {
         int patientId = 1;
         AlertGenerator generator = new AlertGenerator(1);
-        CapturingOutputStrategy outputStrategy = new CapturingOutputStrategy();
+        CaptureOutputStrategy outputStrategy = new CaptureOutputStrategy();
 
         boolean alertTriggered = false;
         boolean triggeredFlag = false;
         boolean unresolvedFlag = false;
         boolean resolvedFlag = false;
         for (int i = 0; i < 2000; i++) { generator.generate(patientId, outputStrategy); }
-        for (CapturingOutputStrategy.Output output : outputStrategy.getOutputs()) {
-            if (output.patientId == patientId) {
-                if (output.label.equals("Alert") && output.data.equals("triggered")) {
-                    alertTriggered = true;
-                    triggeredFlag = true;
-                } else if (triggeredFlag) {
-                    if(output.label.equals("Alert") && output.data.equals("resolved")) {
+        for (PatientRecord output : outputStrategy.getOutputs()) {
+            if (output.getPatientId() == patientId) {
+                String recordType = output.getRecordType();
+                double value = output.getMeasurementValue();
+                
+                if (recordType.equals("Alert")) {
+                    if (value == 1.0) { // triggered
+                        alertTriggered = true;
+                        triggeredFlag = true;
+                    } else if (triggeredFlag && value == 0.0) { // resolved
                         resolvedFlag = true;
-                    } else {
+                    } else if (triggeredFlag) {
                         unresolvedFlag = true;
                     }
                 }

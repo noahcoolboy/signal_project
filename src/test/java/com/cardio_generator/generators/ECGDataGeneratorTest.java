@@ -10,29 +10,34 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.cardio_generator.outputs.CaptureOutputStrategy;
+import com.data_management.PatientRecord;
+
 public class ECGDataGeneratorTest {
     
     @Test
     void testGenerateEcg() {
         int patientId = 1;
         ECGDataGenerator generator = new ECGDataGenerator(5);
-        CapturingOutputStrategy outputStrategy = new CapturingOutputStrategy();
+        CaptureOutputStrategy outputStrategy = new CaptureOutputStrategy();
 
         generator.generate(patientId, outputStrategy);
-        List<CapturingOutputStrategy.Output> outputs = outputStrategy.getOutputs();
+        List<PatientRecord> outputs = outputStrategy.getOutputs();
 
         // Should produce exactly 1 output
         assertEquals(1, outputs.size());
 
         boolean ecgFound = false;
 
-        for (CapturingOutputStrategy.Output output : outputs) {
-            double value = Double.parseDouble(output.data);
-            if (output.label.equals("ECG")) {
+        for (PatientRecord output : outputs) {
+            double value = output.getMeasurementValue();
+            String recordType = output.getRecordType();
+            
+            if (recordType.equals("ECG")) {
                 ecgFound = true;
                 assertTrue(value >= -0.8 && value <= 0.85, "ECG value out of range: " + value);
             } else {
-                fail("Unexpected label: " + output.label);
+                fail("Unexpected label: " + recordType);
             }
         }
 

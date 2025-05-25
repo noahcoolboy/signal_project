@@ -79,4 +79,24 @@ public class BloodSaturationAlertStrategyTest {
         Alert alert = strategy.checkAlert(patient);
         assertNull(alert, "No alert should be generated for drop outside 10-minute window");
     }
+
+    @Test
+    void testCheckAlertWithRapidSaturationDrop() {
+        BloodSaturationAlertStrategy strategy = new BloodSaturationAlertStrategy();
+        Patient patient = new Patient(12345);
+
+        long now = System.currentTimeMillis();
+        patient.addRecord(98.0, "Saturation", now - 9 * 60 * 1000); // 9 minutes ago
+        patient.addRecord(92.5, "Saturation", now); // 5.5% drop within 10 minutes
+
+        Alert alert = strategy.checkAlert(patient);
+        
+        assertNotNull(alert, "Alert should be generated for rapid drop");
+        assertTrue(alert instanceof BloodSaturationAlert);
+        assertTrue(alert.getCondition().contains("dropped rapidly"));
+
+        alert = strategy.checkAlert(patient);
+        assertNull(alert, "Alert should not be repeated for the same condition within 10 minutes");
+    }
+
 }

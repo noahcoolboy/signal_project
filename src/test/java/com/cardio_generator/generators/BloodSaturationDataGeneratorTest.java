@@ -10,31 +10,34 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.cardio_generator.outputs.CaptureOutputStrategy;
+import com.data_management.PatientRecord;
+
 public class BloodSaturationDataGeneratorTest {
     
     @Test
     void testGenerateBloodSaturation() {
         int patientId = 1;
         BloodSaturationDataGenerator generator = new BloodSaturationDataGenerator(5);
-        CapturingOutputStrategy outputStrategy = new CapturingOutputStrategy();
+        CaptureOutputStrategy outputStrategy = new CaptureOutputStrategy();
 
         generator.generate(patientId, outputStrategy);
-        List<CapturingOutputStrategy.Output> outputs = outputStrategy.getOutputs();
+        List<PatientRecord> outputs = outputStrategy.getOutputs();
 
         // Should produce exactly 1 output
         assertEquals(1, outputs.size());
 
         boolean saturationFound = false;
 
-        for (CapturingOutputStrategy.Output output : outputs) {
-            assertTrue(output.data.substring(output.data.length() - 1).equals("%"),
-                    "Data should end with '%': " + output.data);
-            double value = Double.parseDouble(output.data.substring(0, output.data.length() - 1));
-            if (output.label.equals("Saturation")) {
+        for (PatientRecord output : outputs) {
+            double value = output.getMeasurementValue();
+            String recordType = output.getRecordType();
+            
+            if (recordType.equals("Saturation")) {
                 saturationFound = true;
                 assertTrue(value >= 90 && value <= 100, "Blood saturation value out of range: " + value);
             } else {
-                fail("Unexpected label: " + output.label);
+                fail("Unexpected label: " + recordType);
             }
         }
 
