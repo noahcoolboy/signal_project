@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.alerts.AlertGenerator;
 import com.cardio_generator.inputs.WebSocketDataReader;
+import com.util.Generated;
 
 /**
  * Manages storage and retrieval of patient data within a healthcare monitoring
@@ -114,6 +115,7 @@ public class DataStorage {
      * @throws URISyntaxException if the WebSocket URI is invalid
      * @throws IOException if there is an error in reading or writing data
      */
+    @Generated
     public static void main(String[] args) throws InterruptedException, URISyntaxException, IOException {
         long time = 0;
 
