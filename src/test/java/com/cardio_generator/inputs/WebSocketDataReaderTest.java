@@ -103,7 +103,7 @@ class WebSocketDataReaderTest {
         @Override public String getFieldValue(String name) { return null; }
         @Override public boolean hasFieldValue(String name) { return false; }
         @Override public byte[] getContent() { return null; }
-        @Override public Iterator iterateHttpFields() { return null; }
+        @Override public Iterator<String> iterateHttpFields() { return null; }
     }
    
     @Test

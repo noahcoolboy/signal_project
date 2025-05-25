@@ -66,6 +66,7 @@ public class AlertGeneratorTest {
         
         java.lang.reflect.Field field = AlertGenerator.class.getDeclaredField("alertStrategies");
         field.setAccessible(true);
+        @SuppressWarnings("unchecked")
         List<AlertStrategy> strategies = (List<AlertStrategy>) field.get(generator);
         
         assertNotNull(strategies);

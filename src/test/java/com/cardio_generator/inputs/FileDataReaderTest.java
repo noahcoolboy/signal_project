@@ -2,22 +2,21 @@ package com.cardio_generator.inputs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
-import java.util.Set;
 
 import com.data_management.DataStorage;
 import com.data_management.PatientRecord;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 
 public class FileDataReaderTest {
 
@@ -87,24 +86,6 @@ public class FileDataReaderTest {
         assertEquals(0, storage.getRecords(4, 0, Long.MAX_VALUE).size(), "No records should be processed for Patient ID 4");
         
     }
-    @Test
-    @Disabled
-    public void testReadDataWithInvalidFiles(@TempDir Path tempDir) throws IOException {
-        // Create test files with invalid data
-        Path invalidFile1 = tempDir.resolve("invalid1.txt");
-        Files.write(invalidFile1, List.of(
-            "Invalid line format",
-            "Patient ID: 1, Timestamp: 1623456789000, Label: HeartRate",
-            "Patient ID: 2, Timestamp: not_a_number, Label: BloodPressure, Data: 120/80"
-        ));
-
-        DataStorage storage = DataStorage.getInstance();
-        FileDataReader reader = new FileDataReader(tempDir.toString());
-        reader.readData(storage);
-
-        // Verify no records were processed from invalid files
-        assertTrue(storage.getAllPatients().isEmpty());
-    }
 
     @Test
     public void testReadDataWithMixedFiles(@TempDir Path tempDir) throws IOException {
@@ -166,32 +147,6 @@ public class FileDataReaderTest {
     }
 
     @Test
-    @Disabled
-    public void testReadDataWithUnreadableFile(@TempDir Path tempDir) throws IOException {
-        // Create a valid file
-        Path validFile = tempDir.resolve("valid.txt");
-        Files.write(validFile, List.of(
-            "Patient ID: 1, Timestamp: 1623456789000, Label: HeartRate, Data: 72.5"
-        ));
-
-        // Create an unreadable file (simulate by setting permissions to no read access)
-        Path unreadableFile = tempDir.resolve("unreadable.txt");
-        Files.createFile(unreadableFile);
-        Set<PosixFilePermission> noReadPermissions = PosixFilePermissions.fromString("---------");
-        Files.setPosixFilePermissions(unreadableFile, noReadPermissions);
-
-        DataStorage storage = DataStorage.getInstance();
-        FileDataReader reader = new FileDataReader(tempDir.toString());
-        reader.readData(storage);
-
-        // Verify that:
-        // 1. The valid file was processed
-        // 2. The unreadable file was skipped (exception caught and handled)
-        assertEquals(1, storage.getAllPatients().size());
-        assertEquals(1, storage.getRecords(1, 0, Long.MAX_VALUE).size());
-    }
-
-    @Test
     public void testReadDataWithDirectory(@TempDir Path tempDir) throws IOException {
         // Create a valid file
         Path validFile = tempDir.resolve("valid.txt");
@@ -212,5 +167,32 @@ public class FileDataReaderTest {
         // 2. The directory was skipped (exception caught and handled)
         assertEquals(1, storage.getAllPatients().size());
         assertEquals(1, storage.getRecords(2, 0, Long.MAX_VALUE).size());
+    }
+
+    @Test
+    public void testFileReadFail() throws IOException {
+        File testFile = new File("tmp/test.txt");
+        testFile.getParentFile().mkdirs(); // Ensure the directory exists
+        testFile.createNewFile();
+
+        try(MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.readAllLines(testFile.toPath()))
+                .thenThrow(new IOException("File read error"));
+
+            DataStorage storage = DataStorage.getInstance();
+            FileDataReader reader = new FileDataReader("tmp");
+            reader.readData(storage);
+
+            // Verify that no records were added due to the read error
+            assertTrue(storage.getAllPatients().isEmpty(), "No records should be processed due to file read error");
+        }
+
+        // Clean up the test file
+        if (testFile.exists()) {
+            testFile.delete();
+        }
+        if (testFile.getParentFile().exists()) {
+            testFile.getParentFile().delete();
+        }
     }
 }

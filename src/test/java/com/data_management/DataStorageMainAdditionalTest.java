@@ -7,8 +7,6 @@ import com.alerts.AlertGenerator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -140,11 +138,9 @@ class DataStorageMainAdditionalTest {
     // Test implementation of DataReader
     private static class TestDataReader implements DataReader {
         boolean disconnectCalled = false;
-        boolean readDataCalled = false;
         
         @Override
         public void readData(DataStorage dataStorage) throws IOException {
-            readDataCalled = true;
             // Add some test data
             dataStorage.addPatientData(1, 72.0, "HeartRate", System.currentTimeMillis());
         }

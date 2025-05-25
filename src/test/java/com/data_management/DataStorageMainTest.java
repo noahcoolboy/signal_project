@@ -13,7 +13,6 @@ import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -96,7 +95,6 @@ class DataStorageMainTest {
                         patientIds.add(patient.getPatientId());
                         System.out.println("Now Monitoring Patient: " + patient.getPatientId());
                     }
-                    List<PatientRecord> records = storage.getRecords(patient.getPatientId(), 0, System.currentTimeMillis());
                     alertGenerator.evaluateData(patient);
                 }
             } catch (Exception e) {

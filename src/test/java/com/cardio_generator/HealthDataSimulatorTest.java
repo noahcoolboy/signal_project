@@ -9,9 +9,6 @@ import static com.github.stefanbirkner.systemlambda.SystemLambda.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.data_management.DataStorage;
-import com.data_management.Patient;
-
 public class HealthDataSimulatorTest {
 
     static class HealthDataSimulatorMock extends HealthDataSimulator {
