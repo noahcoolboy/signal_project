@@ -164,4 +164,51 @@ private static class SimpleWebSocketServer extends org.java_websocket.server.Web
     @Override public void onError(org.java_websocket.WebSocket conn, Exception ex) {}
     @Override public void onStart() {}
 }
+ // Test when WebSocket is NOT open
+    @Test
+    public void testConnectWhenNotOpen() throws Exception {
+        URI dummyUri = new URI("ws://dummy");
+        
+        // Create a test-specific subclass
+        class TestReader extends WebSocketDataReader {
+            public boolean connectCalled = false;
+
+            public TestReader(URI serverUri) { super(serverUri); }
+
+            @Override
+            public boolean isOpen() { return false; } // Force state: not open
+
+            @Override
+            public void connect() { connectCalled = true; } // Track method call
+        }
+
+        TestReader reader = new TestReader(dummyUri);
+        reader.readData(storage); // Use a real DataStorage
+
+        assertTrue(reader.connectCalled, "connect() should be called when not open");
+    }
+
+    // Test when WebSocket is already open
+    @Test
+    public void testNoConnectWhenAlreadyOpen() throws Exception {
+        URI dummyUri = new URI("ws://dummy");
+        
+        // Create a test-specific subclass
+        class TestReader extends WebSocketDataReader {
+            public boolean connectCalled = false;
+
+            public TestReader(URI serverUri) { super(serverUri); }
+
+            @Override
+            public boolean isOpen() { return true; } // Force state: already open
+
+            @Override
+            public void connect() { connectCalled = true; } // Track method call
+        }
+
+        TestReader reader = new TestReader(dummyUri);
+        reader.readData(storage); // Use a real DataStorage
+
+        assertFalse(reader.connectCalled, "connect() should NOT be called when already open");
+    }
 }
