@@ -47,27 +47,15 @@ public class AlertGeneratorTest {
     void testEvaluateDataWithAlert() {
         DataStorage storage = DataStorage.getInstance();
         Patient patient = new Patient(12345);
-        
-        AlertGenerator generator = new AlertGenerator(storage) {
-            @Override
-            public void evaluateData(Patient patient) {
-                Alert alert = new Alert(String.valueOf(patient.getPatientId()), "Test Condition", System.currentTimeMillis());
-                try {
-                    java.lang.reflect.Method method = AlertGenerator.class.getDeclaredMethod("triggerAlert", Alert.class);
-                    method.setAccessible(true);
-                    method.invoke(this, alert);
-                } catch (Exception e) {
-                    fail("Failed to invoke triggerAlert method: " + e.getMessage());
-                }
-            }
-        };
-        
+        patient.addRecord(0, "Alert", System.currentTimeMillis());
+
+        AlertGenerator generator = new AlertGenerator(storage);
         generator.evaluateData(patient);
         
         String output = outContent.toString().trim();
         assertTrue(output.contains("[ALERT]"));
         assertTrue(output.contains("Patient ID: 12345"));
-        assertTrue(output.contains("Condition: Test Condition"));
+        assertTrue(output.contains("Condition: User Alert triggered"));
     }
     
     @Test
