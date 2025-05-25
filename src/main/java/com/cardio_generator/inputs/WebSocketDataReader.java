@@ -2,6 +2,7 @@ package com.cardio_generator.inputs;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import org.java_websocket.client.WebSocketClient;
@@ -46,7 +47,7 @@ public class WebSocketDataReader extends WebSocketClient implements DataReader {
      */
     @Override
     public void disconnect() {
-        this.disconnect();
+        this.close();
     }
 
     /**
@@ -74,9 +75,10 @@ public class WebSocketDataReader extends WebSocketClient implements DataReader {
                     dataValue = Double.parseDouble(data);
                 }
                 dataStorage.addPatientData(patientId, dataValue, label, timestamp);
-            } catch (NumberFormatException e) {
-                System.err.println("Error parsing message: " + message);
-            } finally {
+            } catch (InputMismatchException e) {
+                System.err.println("Input mismatch in message: " + message);
+            }
+            finally {
                 scanner.close();
             }
         }
