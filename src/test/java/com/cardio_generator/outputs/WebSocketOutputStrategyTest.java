@@ -15,42 +15,45 @@ import org.junit.jupiter.api.Test;
 
 class WebSocketOutputStrategyTest {
 
-    private WebSocketOutputStrategy server;
+     private WebSocketOutputStrategy server;
     private static final int TEST_PORT = 12346;
     private String receivedMessage;
-    private CountDownLatch latch;
+    private CountDownLatch connectionLatch;
+    private CountDownLatch messageLatch;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws InterruptedException {
         server = new WebSocketOutputStrategy(TEST_PORT);
-        latch = new CountDownLatch(1);
+        // Allow time for the server to start
+        Thread.sleep(2000);
+        connectionLatch = new CountDownLatch(1);
+        messageLatch = new CountDownLatch(1);
     }
-
     @AfterEach
     void tearDown() {
         if (server != null) {
             try {
-                server.output(0, 0, "SHUTDOWN", "");
-            } catch (Exception e) {
-                // Ignore
+                server.stop();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
 
+
     @Test
     @Disabled
     void testOutputWithClient() throws Exception {
-        // Create WebSocket client
         WebSocketClient client = new WebSocketClient(new URI("ws://localhost:" + TEST_PORT)) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
-                System.out.println("Client connected");
+                connectionLatch.countDown();
             }
 
             @Override
             public void onMessage(String message) {
                 receivedMessage = message;
-                latch.countDown();
+                messageLatch.countDown();
             }
 
             @Override
@@ -66,14 +69,14 @@ class WebSocketOutputStrategyTest {
 
         client.connect();
         
-        // Wait for connection
-        TimeUnit.MILLISECONDS.sleep(500);
+        // Wait for client to connect
+        assertTrue(connectionLatch.await(2, TimeUnit.SECONDS), "Client connection timed out");
         
         // Send test message
         server.output(1, 1000L, "HeartRate", "72.5");
         
         // Wait for message to be received
-        assertTrue(latch.await(2, TimeUnit.SECONDS));
+        assertTrue(messageLatch.await(2, TimeUnit.SECONDS), "Message not received");
         assertEquals("1,1000,HeartRate,72.5", receivedMessage);
         
         client.close();

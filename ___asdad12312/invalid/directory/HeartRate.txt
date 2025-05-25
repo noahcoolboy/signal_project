@@ -1,1 +1,0 @@
-Patient ID: 1, Timestamp: 1000, Label: HeartRate, Data: 72.5
