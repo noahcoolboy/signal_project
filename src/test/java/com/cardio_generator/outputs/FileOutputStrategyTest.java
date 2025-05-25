@@ -91,4 +91,29 @@ class FileOutputStrategyTest {
         String content = Files.readString(filePath);
         assertTrue(content.contains("Patient ID: 1, Timestamp: 1000, Label: , Data: NoLabelData"));
     }
+    @Test
+void testOutput_WhenFileWriteFails_ShouldHandleError() throws IOException {
+    String label = "HeartRate";
+    Path fakeFilePath = Paths.get(tempDir.toString(), label + ".txt");
+
+    // Create a directory where the file is expected to be written
+    Files.createDirectory(fakeFilePath);
+
+    // Redirect System.err to capture error output
+    final java.io.ByteArrayOutputStream errContent = new java.io.ByteArrayOutputStream();
+    final java.io.PrintStream originalErr = System.err;
+    System.setErr(new java.io.PrintStream(errContent));
+
+    try {
+        // Attempt to write to a directory path as if it were a file
+        strategy.output(1, 1000L, label, "72.5");
+
+        // Verify the error message was printed
+        assertTrue(errContent.toString().contains("Error writing to file"));
+    } finally {
+        // Restore original System.err
+        System.setErr(originalErr);
+    }
+}
+
 }

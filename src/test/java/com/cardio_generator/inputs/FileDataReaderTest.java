@@ -5,10 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
 
 import java.io.File;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Set;
+
+import javax.xml.crypto.Data;
 
 import com.data_management.DataStorage;
 import com.data_management.PatientRecord;
@@ -20,9 +24,15 @@ import org.mockito.MockedStatic;
 
 public class FileDataReaderTest {
 
+     @TempDir
+    Path tempDir;
+    FileDataReader reader;
+    DataStorage storage;
     @BeforeEach
     public void setUp() {
         DataStorage.getInstance().clear();
+        reader = new FileDataReader(tempDir.toString());
+        storage = DataStorage.getInstance(); // Assuming it has a default constructor
     }
 
     @Test
@@ -168,31 +178,27 @@ public class FileDataReaderTest {
         assertEquals(1, storage.getAllPatients().size());
         assertEquals(1, storage.getRecords(2, 0, Long.MAX_VALUE).size());
     }
+     @Test
+    void testReadData_withUnreadableFile_shouldTriggerOuterCatch() throws IOException {
+        // Create an unreadable file (simulate access error)
+        Path file = tempDir.resolve("unreadable.txt");
+        Files.write(file, "Valid looking line".getBytes());
 
-    @Test
-    public void testFileReadFail() throws IOException {
-        File testFile = new File("tmp/test.txt");
-        testFile.getParentFile().mkdirs(); // Ensure the directory exists
-        testFile.createNewFile();
+        File realFile = file.toFile();
+        assertTrue(realFile.setReadable(false)); // Make file unreadable
 
-        try(MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {
-            mockedFiles.when(() -> Files.readAllLines(testFile.toPath()))
-                .thenThrow(new IOException("File read error"));
+        // Redirect System.err to capture error output
+        final java.io.ByteArrayOutputStream errContent = new java.io.ByteArrayOutputStream();
+        final java.io.PrintStream originalErr = System.err;
+        System.setErr(new java.io.PrintStream(errContent));
 
-            DataStorage storage = DataStorage.getInstance();
-            FileDataReader reader = new FileDataReader("tmp");
+        try {
             reader.readData(storage);
-
-            // Verify that no records were added due to the read error
-            assertTrue(storage.getAllPatients().isEmpty(), "No records should be processed due to file read error");
-        }
-
-        // Clean up the test file
-        if (testFile.exists()) {
-            testFile.delete();
-        }
-        if (testFile.getParentFile().exists()) {
-            testFile.getParentFile().delete();
+            assertTrue(errContent.toString().contains("Error reading file"));
+        } finally {
+            System.setErr(originalErr);
+            // Reset file permissions so it can be deleted
+            realFile.setReadable(true);
         }
     }
 }

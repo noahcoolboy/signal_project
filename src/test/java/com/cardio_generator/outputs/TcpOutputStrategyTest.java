@@ -4,6 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.lang.reflect.Field;
+import java.net.BindException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +29,6 @@ class TcpOutputStrategyTest {
     @AfterEach
     void tearDown() throws Exception {
         if (server != null) {
-            // Need to properly close resources
             try {
                 server.output(0, 0, "SHUTDOWN", "");
             } catch (Exception e) {
@@ -36,12 +39,10 @@ class TcpOutputStrategyTest {
 
     @Test
     void testOutputWithClient() throws Exception {
-        // Start a client in a separate thread
         Executors.newSingleThreadExecutor().submit(() -> {
             try (Socket clientSocket = new Socket("localhost", TEST_PORT);
                  BufferedReader in = new BufferedReader(
                      new InputStreamReader(clientSocket.getInputStream()))) {
-                
                 String received = in.readLine();
                 assertEquals("1,1000,HeartRate,72.5", received);
             } catch (Exception e) {
@@ -49,21 +50,78 @@ class TcpOutputStrategyTest {
             }
         });
 
-        // Wait for client to connect
         TimeUnit.MILLISECONDS.sleep(500);
-        
-        // Send test message
+
         server.output(1, 1000L, "HeartRate", "72.5");
-        
-        // Give time for message to be received
+
         TimeUnit.MILLISECONDS.sleep(500);
     }
-//     @Test
-//     void testOutputWithNullOut() {
-//         // Test with null output
-//         Exception exception = assertThrows(NullPointerException.class, () -> {
-//             server.output(1, 1000L, "HeartRate", null);
-//         });
-//         assertEquals("Data cannot be null", exception.getMessage());
-//     }
+
+    @Test
+    void testOutputWithoutClientDoesNotThrow() {
+        // No client connected
+        assertDoesNotThrow(() -> server.output(1, 1000L, "HeartRate", "72.5"));
+    }
+
+    @Test
+    void testServerSocketFailsToBind() {
+        Exception exception = assertThrows(BindException.class, () -> {
+            // Occupy the port first to cause bind failure
+            ServerSocket occupied = new ServerSocket(TEST_PORT);
+            try {
+                new TcpOutputStrategy(TEST_PORT);
+            } finally {
+                occupied.close();
+            }
+        });
+
+        assertNotNull(exception.getMessage());
+    }
+
+    @Test
+    void testClientOutputStreamFailure() throws Exception {
+        // Set serverSocket to a dummy that will throw IOException
+        TcpOutputStrategy faultyServer = new TcpOutputStrategy(TEST_PORT + 1);
+
+        Field serverSocketField = TcpOutputStrategy.class.getDeclaredField("serverSocket");
+        serverSocketField.setAccessible(true);
+        ServerSocket originalSocket = (ServerSocket) serverSocketField.get(faultyServer);
+        originalSocket.close(); // force it to fail on accept()
+
+        // Let background thread attempt to accept and fail
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        // Still should not crash
+        faultyServer.output(2, 2000L, "Temp", "36.7");
+    }
+    @Test
+void testOutputActuallySendsMessageWhenOutIsNotNull() throws Exception {
+    final String[] receivedLine = new String[1];
+
+    // Start a client to connect and read the message
+    Executors.newSingleThreadExecutor().submit(() -> {
+        try (Socket clientSocket = new Socket("localhost", TEST_PORT);
+             BufferedReader in = new BufferedReader(
+                 new InputStreamReader(clientSocket.getInputStream()))) {
+            
+            // Wait for message
+            receivedLine[0] = in.readLine();
+        } catch (Exception e) {
+            fail("Client error: " + e.getMessage());
+        }
+    });
+
+    // Wait for server to accept connection and initialize PrintWriter
+    TimeUnit.MILLISECONDS.sleep(500);
+
+    // Send the message
+    server.output(42, 9999L, "O2", "98.6");
+
+    // Wait to ensure message is sent and received
+    TimeUnit.MILLISECONDS.sleep(500);
+
+    // Check received message
+    assertEquals("42,9999,O2,98.6", receivedLine[0]);
+}
+
 }

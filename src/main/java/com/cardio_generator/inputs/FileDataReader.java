@@ -70,12 +70,12 @@ public class FileDataReader implements DataReader {
 
                                 storage.addPatientData(patientId, value, label, timestamp);
                             } catch (Exception e) {
-                                //System.err.println("Error parsing line: " + line + " - " + e.getMessage());
+                                System.err.println("Error parsing line: " + line + " - " + e.getMessage());
                             }
                         }
                     }
                 } catch (Exception e) {
-                    //System.err.println("Error reading file " + file.getName() + ": " + e.getMessage());
+                    System.err.println("Error reading file " + file.getName() + ": " + e.getMessage());
                 }
             }
         }
