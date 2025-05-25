@@ -13,17 +13,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up Nix
-        uses: cachix/install-nix-action@v31
-      - name: Build and Test
-        run: nix build
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build with Maven
+        run: |
+          mvn clean package
       - name: Fetch project version
-        run: echo "VERSION=$(nix develop --command -- mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+        run: echo "VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: cardio_generator-${{ env.VERSION }}
-          path: result/share/cardio_generator/cardio_generator.jar
+          path: target/cardio_generator-${{ env.VERSION }}.jar
         env:
           VERSION: ${{ env.VERSION }}
 
@@ -40,7 +44,7 @@ jobs:
         shell: nu {0}
         run: |
           let color = [[min, color]; [90, '4c1'], [80, '97CA00'], [70, 'a4a61d'], [60, 'dfb317'], [50, 'fe7d37'], [0, 'e05d44']]
-          open result/cov.csv
+          open target/site/jacoco/jacoco.csv
             | math sum
             | transpose name value
             | group-by { $in.name | split row '_' | get 0 }

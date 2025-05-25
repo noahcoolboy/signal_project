@@ -34,11 +34,11 @@ public class TcpOutputStrategy implements OutputStrategy {
                     out = new PrintWriter(clientSocket.getOutputStream(), true);
                     System.out.println("Client connected: " + clientSocket.getInetAddress());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -54,6 +54,30 @@ public class TcpOutputStrategy implements OutputStrategy {
         if (out != null) {
             String message = String.format("%d,%d,%s,%s", patientId, timestamp, label, data);
             out.println(message);
+        }
+    }
+
+    /**
+     * Stops the TCP server and closes the client connection.
+     * @throws InterruptedException if the thread is interrupted while waiting for the server to stop
+     */
+    public void stop() throws InterruptedException {
+        if (out != null) {
+            out.close();
+        }
+        if (clientSocket != null && !clientSocket.isClosed()) {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

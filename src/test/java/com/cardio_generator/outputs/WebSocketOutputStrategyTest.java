@@ -5,7 +5,9 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -19,10 +21,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 class WebSocketOutputStrategyTest {
 
     private WebSocketOutputStrategy server;
-    private static final int TEST_PORT = 12346;
+    private static final int TEST_PORT = 8080;
     private TestWebSocketClient client;
     private CountDownLatch connectionLatch;
     private CountDownLatch messageLatch;

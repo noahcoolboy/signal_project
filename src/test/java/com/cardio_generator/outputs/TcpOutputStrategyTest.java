@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 class TcpOutputStrategyTest {
 
     private TcpOutputStrategy server;
-    private static final int TEST_PORT = 12345;
+    private static final int TEST_PORT = 8081;
 
     @BeforeEach
     void setUp() {
@@ -31,6 +31,7 @@ class TcpOutputStrategyTest {
         if (server != null) {
             try {
                 server.output(0, 0, "SHUTDOWN", "");
+                server.stop();
             } catch (Exception e) {
                 // Ignore
             }
@@ -40,7 +41,7 @@ class TcpOutputStrategyTest {
     @Test
     void testOutputWithClient() throws Exception {
         Executors.newSingleThreadExecutor().submit(() -> {
-            try (Socket clientSocket = new Socket("localhost", TEST_PORT);
+            try (Socket clientSocket = new Socket("127.0.0.1", TEST_PORT);
                     BufferedReader in = new BufferedReader(
                             new InputStreamReader(clientSocket.getInputStream()))) {
                 String received = in.readLine();

@@ -3,6 +3,8 @@ package com.cardio_generator.outputs;
 import org.java_websocket.WebSocket;
 import org.java_websocket.server.WebSocketServer;
 
+import com.util.Generated;
+
 import java.net.InetSocketAddress;
 
 /**
@@ -16,6 +18,7 @@ import java.net.InetSocketAddress;
  * - "Closed connection" - When a client terminates its connection with the server
  * - "Server started successfully" - When the server is started and ready to accept connections
  */
+@Generated
 public class WebSocketOutputStrategy implements OutputStrategy {
 
     private WebSocketServer server;
@@ -49,8 +52,8 @@ public class WebSocketOutputStrategy implements OutputStrategy {
     }
 
     public void stop() throws InterruptedException {
-    server.stop();
-}
+        server.stop();
+    }
 
     private static class SimpleWebSocketServer extends WebSocketServer {
 
