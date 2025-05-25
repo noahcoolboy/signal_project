@@ -50,6 +50,8 @@ public class WebSocketDataReader extends WebSocketClient implements DataReader {
         this.close();
     }
 
+    
+
     /**
      * Handles incoming messages from the WebSocket server.
      * Parses the message and adds the data to the storage system.

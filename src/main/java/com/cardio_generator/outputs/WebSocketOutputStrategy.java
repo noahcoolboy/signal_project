@@ -48,6 +48,10 @@ public class WebSocketOutputStrategy implements OutputStrategy {
         }
     }
 
+    public void stop() throws InterruptedException {
+    server.stop();
+}
+
     private static class SimpleWebSocketServer extends WebSocketServer {
 
         public SimpleWebSocketServer(InetSocketAddress address) {
