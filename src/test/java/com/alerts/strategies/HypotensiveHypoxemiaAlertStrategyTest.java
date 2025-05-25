@@ -4,14 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import javax.xml.crypto.Data;
-
 import org.junit.jupiter.api.Test;
 
 import com.alerts.Alert;
-import com.cardio_generator.generators.ECGDataGenerator;
-import com.cardio_generator.inputs.CaptureDataReader;
-import com.cardio_generator.outputs.CaptureOutputStrategy;
 import com.data_management.DataStorage;
 import com.data_management.Patient;
 
@@ -22,6 +17,7 @@ public class HypotensiveHypoxemiaAlertStrategyTest {
 
     @Test
     public void testHypotensiveHypoxemiaAlertStrategy() {
+        dataStorage.clear();
         dataStorage.addPatientData(1, 0, "ECG", System.currentTimeMillis());
         Patient patient = dataStorage.getAllPatients().get(0);
 
@@ -40,17 +36,35 @@ public class HypotensiveHypoxemiaAlertStrategyTest {
 
     @Test
     public void testHypotensiveHypoxemiaAlertStrategyMissingData() {
+        dataStorage.clear();
         dataStorage.addPatientData(1, 0, "ECG", System.currentTimeMillis());
-        assertNull(strategy.checkAlert(dataStorage.getAllPatients().get(0)), 
-            "HypotensiveHypoxemiaAlertStrategy should not produce an alert when SystolicPressure is missing");
+        Patient patient = dataStorage.getAllPatients().get(0);
+        assertNull(strategy.checkAlert(patient),
+            "HypotensiveHypoxemiaAlertStrategy should not produce an alert when systolic pressure is missing");
         
         dataStorage.addPatientData(1, 80, "SystolicPressure", System.currentTimeMillis());
-        assertNull(strategy.checkAlert(dataStorage.getAllPatients().get(0)), 
+        assertNull(strategy.checkAlert(patient),
             "HypotensiveHypoxemiaAlertStrategy should not produce an alert when diastolic pressure is missing");
 
+        dataStorage.addPatientData(2, 50, "DiastolicPressure", System.currentTimeMillis());
+        assertNull(strategy.checkAlert(dataStorage.getAllPatients().get(1)),
+            "HypotensiveHypoxemiaAlertStrategy should not produce an alert when systolic pressure is missing");
+
         dataStorage.addPatientData(1, 50, "DiastolicPressure", System.currentTimeMillis());
-        assertNull(strategy.checkAlert(dataStorage.getAllPatients().get(0)), 
+        assertNull(strategy.checkAlert(patient),
             "HypotensiveHypoxemiaAlertStrategy should not produce an alert when oxygen saturation is missing");
+    }
+
+    @Test
+    public void testHypotensiveHypoxemiaAlertStrategyNormalConditions() {
+        dataStorage.clear();
+        dataStorage.addPatientData(1, 120, "SystolicPressure", System.currentTimeMillis());
+        dataStorage.addPatientData(1, 80, "DiastolicPressure", System.currentTimeMillis());
+        dataStorage.addPatientData(1, 98, "Saturation", System.currentTimeMillis());
+        
+        Patient patient = dataStorage.getAllPatients().get(0);
+        Alert alert = strategy.checkAlert(patient);
+        assertNull(alert, "HypotensiveHypoxemiaAlertStrategy should not produce an alert when conditions are normal");
     }
 
 }

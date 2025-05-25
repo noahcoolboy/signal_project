@@ -96,6 +96,15 @@ public class DataStorage {
     }
 
     /**
+     * Clears all patient data from the storage.
+     * This method is useful for resetting the storage, e.g., for testing or
+     * reinitialization purposes.
+     */
+    public void clear() {
+        patientMap.clear();
+    }
+
+    /**
      * The main method for the DataStorage class.
      * Initializes the system, reads data into storage, and continuously monitors
      * and evaluates patient data.

@@ -30,7 +30,10 @@ import java.util.ArrayList;
  * initializing the simulation, parsing command line arguments,
  * and scheduling tasks for each patient.
  */
-public class HealthDataSimulator {
+public abstract class HealthDataSimulator {
+
+    // Used to exclude the method from jacoco coverage reports.
+    private @interface Generated {}
 
     private static int patientCount = 50; // Default number of patients
     private static ScheduledExecutorService scheduler;
@@ -38,10 +41,10 @@ public class HealthDataSimulator {
     private static final Random random = new Random();
 
     /**
-     * Instantiate a new HealthDataSimulator.
+     * Health data simulator
      */
-    public HealthDataSimulator() {}
-
+    @Generated
+    protected HealthDataSimulator() {}
 
     /**
      * The main method of the project. Looks at the provided arguments,
@@ -50,11 +53,13 @@ public class HealthDataSimulator {
      * @param args Command line arguments for the program.
      * @throws IOException If there is an error creating the output directory or file.
      */
+    @Generated 
     public static void main(String[] args) throws IOException {
 
-        parseArguments(args);
-
-        scheduler = Executors.newScheduledThreadPool(patientCount * 4);
+        Integer code = parseArguments(args);
+        if (code != null) {
+            System.exit(code);
+        }
 
         List<Integer> patientIds = initializePatientIds(patientCount);
         Collections.shuffle(patientIds); // Randomize the order of patient IDs
@@ -64,16 +69,17 @@ public class HealthDataSimulator {
 
     /**
      * Parses command line arguments to configure the simulator.
+     * 
      * @param args Command line arguments.
+     * @return An integer indicating the exit code (0 for success, 1 for error), or null if no errors occurred.
      * @throws IOException If there is an error creating the output directory or file.
      */
-    private static void parseArguments(String[] args) throws IOException {
+    protected static Integer parseArguments(String[] args) throws IOException {
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-h":
                     printHelp();
-                    System.exit(0);
-                    break;
+                    return 0;
                 case "--patient-count":
                     if (i + 1 < args.length) {
                         try {
@@ -115,6 +121,11 @@ public class HealthDataSimulator {
                             } catch (NumberFormatException e) {
                                 System.err.println("Invalid port for TCP output. Please specify a valid port number.");
                             }
+                        } else if (outputArg.equals("quiet")) {
+                            outputStrategy = new ConsoleOutputStrategy() {
+                                @Override
+                                public void output(int patientId, long timestamp, String label, String data) {}
+                            };
                         } else {
                             System.err.println("Unknown output type. Using default (console).");
                         }
@@ -123,9 +134,10 @@ public class HealthDataSimulator {
                 default:
                     System.err.println("Unknown option '" + args[i] + "'");
                     printHelp();
-                    System.exit(1);
+                    return 1;
             }
         }
+        return null;
     }
 
     /**
@@ -154,7 +166,7 @@ public class HealthDataSimulator {
      * @param patientCount The number of patients to generate.
      * @return A list of patient IDs.
      */
-    private static List<Integer> initializePatientIds(int patientCount) {
+    protected static List<Integer> initializePatientIds(int patientCount) {
         List<Integer> patientIds = new ArrayList<>();
         for (int i = 1; i <= patientCount; i++) {
             patientIds.add(i);
@@ -166,7 +178,9 @@ public class HealthDataSimulator {
      * Schedules all the tasks for each patient, from a list of patient IDs.
      * @param patientIds A list of patient IDs for which to schedule tasks.
      */
-    private static void scheduleTasksForPatients(List<Integer> patientIds) {
+    protected static void scheduleTasksForPatients(List<Integer> patientIds) {
+        scheduler = Executors.newScheduledThreadPool(patientCount * 4);
+
         ECGDataGenerator ecgDataGenerator = new ECGDataGenerator(patientCount);
         BloodSaturationDataGenerator bloodSaturationDataGenerator = new BloodSaturationDataGenerator(patientCount);
         BloodPressureDataGenerator bloodPressureDataGenerator = new BloodPressureDataGenerator(patientCount);

@@ -38,7 +38,7 @@ public class UserAlertAlertStrategy implements AlertStrategy {
      */
     @Override
     public Alert checkAlert(Patient patient) {
-        List<PatientRecord> records = patient.getRecords(lastAlertTime.getOrDefault(patient, 0L), System.currentTimeMillis());
+        List<PatientRecord> records = patient.getRecords(lastAlertTime.getOrDefault(patient, 0L) + 1, System.currentTimeMillis());
         lastAlertTime.put(patient, System.currentTimeMillis());
         
         for (PatientRecord record : records) {
