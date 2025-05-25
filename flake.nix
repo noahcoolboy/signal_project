@@ -15,7 +15,7 @@
           pname = "cardio_generator";
           version = "1.0.0";
           src = ./.;
-          mvnHash = "sha256-fp9B8f8gc5TWgBHCKe422E+DxCzuMA4QNLbxB7mtJ/k=";
+          mvnHash = "sha256-w8+oYcwukbUaXmZCqRfRBn8bkmieV00qHlNOjlfreNI=";
           nativeBuildInputs = [ pkgs.makeWrapper ];
           installPhase = ''
             mkdir -p $out/bin $out/share/cardio_generator
